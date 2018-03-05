@@ -23,8 +23,19 @@ MASTERLOOP=$((MASTERCOUNT - 1))
 NODELOOP=$((NODECOUNT - 1))
 
 DOMAIN=$( awk 'NR==2' /etc/resolv.conf | awk '{ print $2 }' )
-
-echo $PASSWORD
+echo " Print variable entry :"
+echo " 1- SUDOUSER: " $SUDOUSER
+echo " 2- PASSWORD:" $PASSWORD
+echo " 3- PRIVATKEY: " $PRIVATEKEY
+echo " 4-MASTER:" $MASTER
+echo " 5-MASTERPUBLICIPHOSTNAME" $MASTERPUBLICIPHOSTNAME
+echo " 6-MASTERPUBLICIPADDRESS" $MASTERPUBLICIPADDRESS
+echo " 7 INFRA:" $INFRA
+echo " 8 - NODE:" $NODE
+echo " 9-NODECOUNT : " $NODECOUNT
+echo " 10 - MASTERCOUNT:" $MASTERCOUNT
+echo " 11 - ROUTING:" $ROUTING
+echo " 12 - OCP :" $OCP
 
 # Generate private keys for use by Ansible
 echo $(date) " - Generating Private keys for use by Ansible for OpenShift Installation"
@@ -128,7 +139,7 @@ EOF
 
 # Create Ansible Hosts File
 echo $(date) " - Create Ansible Hosts file"
-
+echo "Master count :" $MASTERCOUNT
 if [ $MASTERCOUNT -eq 1 ]
 then
 
