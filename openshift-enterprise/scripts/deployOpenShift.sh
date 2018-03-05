@@ -738,6 +738,19 @@ chmod a+r /tmp/hosts
 
 # Create correct hosts file on all servers
 runuser -l $SUDOUSER -c "ansible-playbook ~/preinstall.yml"
+# add
+
+echo $(date) " - Running network_manager.yml playbook"
+DOMAIN=`domainname -d`
+# Setup NetworkManager to manage eth0
+runuser -l $SUDOUSER -c "ansible-playbook openshift-ansible/playbooks/byo/openshift-node/network_manager.yml"
+
+echo $(date) " - Setting up NetworkManager on eth0"
+# Configure resolv.conf on all hosts through NetworkManager
+runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
+sleep 5
+runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
+runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
 
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
 echo $(date) " - Installing OpenShift Container Platform via Ansible Playbook"
@@ -811,4 +824,11 @@ else
 	runuser -l $SUDOUSER -c "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $OCP-master-0 'sudo systemctl restart atomic-openshift-master-controllers'"	
 fi
 
+# Execute setup-azure-master and setup-azure-node playbooks to configure Azure Cloud Provider
+echo $(date) "- Configuring OpenShift Cloud Provider to be Azure"
+
+runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-master.yml"
+runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-node-master.yml"
+runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-node.yml"
+runuser -l $SUDOUSER -c "ansible-playbook ~/deletestucknodes.yml"
 echo $(date) " - Script complete"
