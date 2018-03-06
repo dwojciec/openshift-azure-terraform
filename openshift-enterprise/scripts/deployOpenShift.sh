@@ -498,7 +498,13 @@ openshift_disable_check=disk_availability
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
-os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+# disable checks
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+
+
+# apply updated node defaults
+openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
 
 openshift_master_cluster_hostname=$MASTERPUBLICIPHOSTNAME
 openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
@@ -615,7 +621,18 @@ openshift_disable_check=disk_availability
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
-os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+
+# enable ntp on masters to ensure proper failover
+openshift_clock_enabled=true
+
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+# disable checks
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+
+
+# apply updated node defaults
+openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
+
 
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname=$BASTION
@@ -745,7 +762,7 @@ chmod a+r /tmp/hosts
 echo $(date) " - Running network_manager.yml playbook"
 DOMAIN=`domainname -d`
 # Setup NetworkManager to manage eth0
-runuser -l $SUDOUSER -c "ansible-playbook openshift-ansible/playbooks/byo/openshift-node/network_manager.yml"
+runuser -l $SUDOUSER -c "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-node/network_manager.yml"
 
 echo $(date) " - Setting up NetworkManager on eth0"
 # Configure resolv.conf on all hosts through NetworkManager
