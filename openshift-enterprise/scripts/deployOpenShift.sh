@@ -722,14 +722,16 @@ echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdom
 echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6"
 for (( c=0; c<$MASTERCOUNT; c++ ))
 do
-	ping -c 1 $MASTER-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2  }'|sed -e 's/(//' -e 's/)//'i -e "s/.net/.net $/MASTER-$c"
+	ping -c 1 $MASTER-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2 }'|sed -e 's/(//' -e 's/)//'i -e "s/.net/.net $MASTER-$c/"
 done
 
 for (( c=0; c<$INFRACOUNT; c++ ))
+do
 	ping -c 1 $INFRA-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2  }'|sed -e 's/(//' -e 's/)//' -e "s/.net/.net $INFRA-$c/"
 done
 
 for (( c=0; c<$NODECOUNT; c++ ))
+do
 	ping -c 1 $NODE-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2  }'|sed -e 's/(//' -e 's/)//' -e "s/.net/.net $NODE-$c/"
 done
 ) >/tmp/hosts
