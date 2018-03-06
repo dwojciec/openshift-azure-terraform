@@ -510,7 +510,7 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # Configure persistent storage via nfs server on master
 openshift_hosted_registry_storage_kind=nfs
 openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_registry_storage_host=$MASTER-0
 openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_registry_storage_nfs_directory=/exports
 openshift_hosted_registry_storage_volume_name=registry
@@ -522,7 +522,7 @@ openshift_hosted_metrics_deploy=true
 # You'll see the metrics failing to deploy 59 times, it will, though, succeed the 60'th time.
 openshift_hosted_metrics_storage_kind=nfs
 openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_metrics_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_metrics_storage_host=$MASTER-0
 openshift_metrics_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_metrics_storage_nfs_directory=/exports
 openshift_hosted_metrics_storage_volume_name=metrics
@@ -533,7 +533,7 @@ openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
 openshift_hosted_logging_deploy=true
 openshift_hosted_logging_storage_kind=nfs
 openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_logging_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_logging_storage_host=$MASTER-0
 openshift_logging_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_logging_storage_nfs_directory=/exports
 openshift_hosted_logging_storage_volume_name=logging
@@ -544,7 +544,7 @@ openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
 openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_etcd_storage_host=$MASTER-0
 openshift_hosted_etcd_storage_nfs_directory=/exports
 openshift_hosted_etcd_storage_volume_name=etcd-vol2 
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
@@ -553,20 +553,20 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 # host group for masters
 [masters]
-$MASTER-0.$DOMAIN
+$MASTER-0
 
 [master0]
-$MASTER-0.$DOMAIN
+$MASTER-0
 
 [etcd]
-$MASTER-0.$DOMAIN
+$MASTER-0
 
 [nfs]
-$MASTER-0.$DOMAIN
+$MASTER-0
 
 # host group for nodes
 [nodes]
-$MASTER-0.$DOMAIN openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_hostname=$MASTER-0.$DOMAIN
+$MASTER-0 openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_hostname=$MASTER-0
 EOF
 
 # Loop to add Infra Nodes
@@ -628,7 +628,7 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # Configure persistent storage via nfs server on master
 openshift_hosted_registry_storage_kind=nfs
 openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_registry_storage_host=$MASTER-0
 openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_registry_storage_nfs_directory=/exports
 openshift_hosted_registry_storage_volume_name=registry
@@ -640,7 +640,7 @@ openshift_hosted_metrics_deploy=true
 # You'll see the metrics failing to deploy 59 times, it will, though, succeed the 60'th time.
 openshift_hosted_metrics_storage_kind=nfs
 openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_metrics_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_metrics_storage_host=$MASTER-0
 openshift_metrics_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_metrics_storage_nfs_directory=/exports
 openshift_hosted_metrics_storage_volume_name=metrics
@@ -651,7 +651,7 @@ openshift_hosted_metrics_public_url=hawkular-metrics.$ROUTING
 openshift_hosted_logging_deploy=true
 openshift_hosted_logging_storage_kind=nfs
 openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_logging_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_logging_storage_host=$MASTER-0
 openshift_logging_storage_nfs_options='*(rw,root_squash)'
 openshift_hosted_logging_storage_nfs_directory=/exports
 openshift_hosted_logging_storage_volume_name=logging
@@ -662,7 +662,7 @@ openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
 openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_host=$MASTER-0.$DOMAIN
+openshift_hosted_etcd_storage_host=$MASTER-0
 openshift_hosted_etcd_storage_nfs_directory=/exports
 openshift_hosted_etcd_storage_volume_name=etcd-vol2 
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
@@ -678,7 +678,7 @@ $MASTER-[0:${MASTERLOOP}]
 [master0]
 $MASTER-0
 [nfs]
-$MASTER-0.$DOMAIN
+$MASTER-0
 [lb]
 $BASTION
 
@@ -737,9 +737,9 @@ done
 ) >/tmp/hosts
 
 chmod a+r /tmp/hosts
-
+#echo "preinstall.yml playbook"
 # Create correct hosts file on all servers
-runuser -l $SUDOUSER -c "ansible-playbook ~/preinstall.yml"
+#runuser -l $SUDOUSER -c "ansible-playbook ~/preinstall.yml"
 # add
 
 echo $(date) " - Running network_manager.yml playbook"
