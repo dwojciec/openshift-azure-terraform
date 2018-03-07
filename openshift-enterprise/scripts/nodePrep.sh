@@ -88,7 +88,8 @@ sed -i -e "s#^OPTIONS='--selinux-enabled'#OPTIONS='--selinux-enabled --insecure-
 # Create thin pool logical volume for Docker
 echo $(date) " - Creating thin pool logical volume for Docker and staring service"
 
-DOCKERVG=$(parted -m /dev/sda print all 2>/dev/null | grep unknown | grep /dev/sd | cut -d':' -f1)
+# DOCKERVG=$(parted -m /dev/sda print all 2>/dev/null | grep unknown | grep /dev/sd | cut -d':' -f1)
+DOCKERVG=/dev/sdc
 
 echo "DEVS=${DOCKERVG}" >> /etc/sysconfig/docker-storage-setup
 echo "VG=docker-vg" >> /etc/sysconfig/docker-storage-setup
@@ -110,6 +111,29 @@ fi
 
 systemctl enable docker
 systemctl start docker
+
+# Container Native Storage pre-req on infra hosts
+subscription-manager repos --enable=rh-gluster-3-for-rhel-7-server-rpms
+
+        # CNS yum pre-reqs
+yum -y install rpcbind redhat-storage-server gluster-block
+
+        # CNS config pre-reqs
+systemctl add-wants multi-user rpcbind.service
+systemctl enable rpcbind.service
+systemctl start rpcbind.service
+
+        # Gluster pre-reqs
+modprobe dm_thin_pool
+modprobe dm_multipath
+modprobe target_core_user
+
+        # Persist gluster pre-reqs
+echo dm_thin_pool >/etc/modules-load.d/dm_thin_pool.conf
+echo dm_multipath >/etc/modules-load.d/dm_multipath.conf
+echo target_core_user >/etc/modules-load.d/target_core_user.conf
+
+
 
 echo $(date) " - Script Complete"
 
