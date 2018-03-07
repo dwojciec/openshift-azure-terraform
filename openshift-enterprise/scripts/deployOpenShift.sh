@@ -499,7 +499,7 @@ openshift_override_hostname_check=true
 osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
 
 # apply updated node defaults
@@ -602,17 +602,17 @@ done
 echo "[glusterfs]" >>/etc/ansible/hosts
 for (( c=0; c<$MASTERCOUNT; c++ ))
 do
-  echo "$MASTER-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 for (( c=0; c<$INFRACOUNT; c++ ))
 do
-  echo "$INFRA-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 for (( c=0; c<$NODECOUNT; c++ ))
 do
-  echo "$NODE-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 
@@ -654,7 +654,7 @@ openshift_clock_enabled=true
 
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
 
 # apply updated node defaults
@@ -763,17 +763,17 @@ done
 echo "[glusterfs]" >>/etc/ansible/hosts
 for (( c=0; c<$MASTERCOUNT; c++ ))
 do
-  echo "$MASTER-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 for (( c=0; c<$INFRACOUNT; c++ ))
 do
-  echo "$INFRA-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 for (( c=0; c<$NODECOUNT; c++ ))
 do
-  echo "$NODE-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 # Create new_nodes group
