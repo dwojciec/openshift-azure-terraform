@@ -63,8 +63,7 @@ echo "21 - LOCATION:" $LOCATION
 echo $(date) " - Generating Private keys for use by Ansible for OpenShift Installation"
 
 echo "Generating Private Keys"
-
-runuser -l $SUDOUSER -c "echo \"$PRIVATEKEY\" > ~/.ssh/id_rsa"
+runuser -l $SUDOUSER -c "(echo \"$PRIVATEKEY\" | base64 -d) > ~/.ssh/id_rsa"
 runuser -l $SUDOUSER -c "chmod 600 ~/.ssh/id_rsa*"
 
 echo "Configuring SSH ControlPath to use shorter path name"
@@ -536,16 +535,18 @@ openshift_hosted_metrics_storage_volume_size=10Gi
 openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
 
 # Setup logging
-openshift_hosted_logging_deploy=true
-openshift_hosted_logging_storage_kind=nfs
-openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_logging_storage_host=$MASTER-0
+openshift_logging_install_logging=true
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_host=$MASTER-0.$DOMAIN
+openshift_logging_storage_nfs_directory=/exports
 openshift_logging_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_logging_storage_nfs_directory=/exports
-openshift_hosted_logging_storage_volume_name=logging
-openshift_hosted_logging_storage_volume_size=10Gi
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
+openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
+
 
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
@@ -556,6 +557,14 @@ openshift_hosted_etcd_storage_volume_name=etcd-vol2
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+
+
+# GlusterFS
+openshift_storage_glusterfs_namespace=cns
+openshift_storage_glusterfs_name=cns
+openshift_storage_glusterfs_wipe=True
+openshift_storage_glusterfs_storageclass=True
+
 
 # host group for masters
 [masters]
@@ -588,6 +597,24 @@ for (( c=0; c<$NODECOUNT; c++ ))
 do
   echo "$NODE-$c openshift_node_labels=\"{'type': 'app', 'zone': 'default'}\" openshift_hostname=$NODE-$c" >> /etc/ansible/hosts
 done
+
+# glusterfs
+echo "[glusterfs]" >>/etc/ansible/hosts
+for (( c=0; c<$MASTERCOUNT; c++ ))
+do
+  echo "$MASTER-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+done
+
+for (( c=0; c<$INFRACOUNT; c++ ))
+do
+  echo "$INFRA-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+done
+
+for (( c=0; c<$NODECOUNT; c++ ))
+do
+  echo "$NODE-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+done
+
 
 # Create new_nodes group
 
@@ -665,14 +692,15 @@ openshift_hosted_metrics_storage_volume_size=10Gi
 openshift_hosted_metrics_public_url=hawkular-metrics.$ROUTING
 
 # Setup logging
-openshift_hosted_logging_deploy=true
-openshift_hosted_logging_storage_kind=nfs
-openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_logging_storage_host=$MASTER-0
+openshift_logging_install_logging=true
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_host=$MASTER-0.$DOMAIN
+openshift_logging_storage_nfs_directory=/exports
 openshift_logging_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_logging_storage_nfs_directory=/exports
-openshift_hosted_logging_storage_volume_name=logging
-openshift_hosted_logging_storage_volume_size=10Gi
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
+openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 
@@ -685,6 +713,13 @@ openshift_hosted_etcd_storage_volume_name=etcd-vol2
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+
+
+# GlusterFS
+openshift_storage_glusterfs_namespace=cns
+openshift_storage_glusterfs_name=cns
+openshift_storage_glusterfs_wipe=True
+openshift_storage_glusterfs_storageclass=True
 
 # host group for masters
 [masters]
@@ -722,6 +757,23 @@ done
 for (( c=0; c<$NODECOUNT; c++ ))
 do
   echo "$NODE-$c openshift_node_labels=\"{'type': 'app', 'zone': 'default'}\" openshift_hostname=$NODE-$c" >> /etc/ansible/hosts
+done
+
+# glusterfs
+echo "[glusterfs]" >>/etc/ansible/hosts
+for (( c=0; c<$MASTERCOUNT; c++ ))
+do
+  echo "$MASTER-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+done
+
+for (( c=0; c<$INFRACOUNT; c++ ))
+do
+  echo "$INFRA-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
+done
+
+for (( c=0; c<$NODECOUNT; c++ ))
+do
+  echo "$NODE-$c glusterfs_devices=\'[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]\' " >> /etc/ansible/hosts
 done
 
 # Create new_nodes group
