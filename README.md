@@ -29,7 +29,7 @@ Preparation Steps
 Deploy the Azure infrastructure and OpenShift
 ---------------------------------------------
 
-* First rename the `terraform.tfvars.example` to `terraform.tfvars` and review the default configuration. Most common options are available inside. The full list of available options are in `config.tf`. 
+* First rename the `terraform.tfvars.example` to `terraform.tfvars` and review the default configuration. Most common options are available inside. The full list of available options are in `variables.tf`. 
 
 * Update `terraform.tfvars` with the path to your passwordless SSH public and private keys. (ssh_public_key and connection_private_ssh_key_path)
 

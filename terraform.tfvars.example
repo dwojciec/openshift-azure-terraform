@@ -25,4 +25,7 @@ master_instance_count=1
 infra_instance_count=1 
 node_instance_count=1
 
-infra_vm_size=
+infra_vm_size="Standard_DS11_v2_Promo"
+node_vm_size="Standard_DS11_v2_Promo"
+master_vm_size="Standard_DS11_v2_Promo"
+bastion_vm_size="Standard_D2_v2"
