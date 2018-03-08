@@ -499,7 +499,7 @@ openshift_override_hostname_check=true
 osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
 
 # apply updated node defaults
