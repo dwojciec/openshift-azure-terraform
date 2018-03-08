@@ -29,13 +29,13 @@ Preparation Steps
 Deploy the Azure infrastructure and OpenShift
 ---------------------------------------------
 
-* First rename the `terraform.tfvars.example` to `terraform.tfvars` and review the default configuration. Most common options are available inside. The full list of available options are in `config.tf`. CentOS is the default as it has pre-requirements built in.
+* First rename the `terraform.tfvars.example` to `terraform.tfvars` and review the default configuration. Most common options are available inside. The full list of available options are in `config.tf`. 
 
-* Update `terraform.tfvars` with the path to your passwordless SSH public and private keys. (openshift_azure_public_key and openshift_azure_private_key)
+* Update `terraform.tfvars` with the path to your passwordless SSH public and private keys. (ssh_public_key and connection_private_ssh_key_path)
 
 * Change `openshift_azure_resource_prefix` (and optionally `openshift_azure_resource_suffix`) to something unique
 
-* Optionally, customize the `openshift_azure_master_vm_count` (default 1), the `openshift_azure_node_vm_count` (default 1) and `openshift_azure_infra_vm_count` for master (default 1), the agents size is Standard_D2_V2 per default, but you can change it for your need.
+* Optionally, customize the `master_instance_count` (default 1), the `node_instance_count` (default 1) and `infra_instance_count` for master (default 1), the bastion host size is Standard_D2_v2 and for the others VM is Standard_DS11_v2_Promo per default, but you can change it for your need.
 
 * Create the OpenShift cluster by executing:
 ```bash

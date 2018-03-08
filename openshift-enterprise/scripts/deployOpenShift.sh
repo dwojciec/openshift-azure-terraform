@@ -484,6 +484,7 @@ nodes
 nfs
 master0
 new_nodes
+glusterfs
 
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
@@ -559,8 +560,6 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 
 # GlusterFS
-openshift_storage_glusterfs_namespace=cns
-openshift_storage_glusterfs_name=cns
 openshift_storage_glusterfs_wipe=True
 openshift_storage_glusterfs_storageclass=True
 
@@ -633,6 +632,7 @@ etcd
 nfs
 lb
 new_nodes
+glusterfs
 master0
 
 # Set variables common for all OSEv3 hosts
@@ -715,8 +715,6 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 
 # GlusterFS
-openshift_storage_glusterfs_namespace=cns
-openshift_storage_glusterfs_name=cns
 openshift_storage_glusterfs_wipe=True
 openshift_storage_glusterfs_storageclass=True
 

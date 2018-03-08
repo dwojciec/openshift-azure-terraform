@@ -86,9 +86,9 @@ echo $(date) " - Installing OpenShift utilities"
 yum -y install atomic-openshift-utils
 
 # Install Docker 1.12.6
-echo $(date) " - Installing Docker 1.13.1"
+echo $(date) " - Installing Docker 1.12.6"
 
-yum -y install docker-1.13.1
+yum -y install docker-1.12.6
 sed -i -e "s#^OPTIONS='--selinux-enabled'#OPTIONS='--selinux-enabled --insecure-registry 172.30.0.0/16'#" /etc/sysconfig/docker
 
 # Create thin pool logical volume for Docker
@@ -151,25 +151,25 @@ then
 fi
 
 # Container Native Storage pre-req on infra hosts
-        subscription-manager repos --enable=rh-gluster-3-for-rhel-7-server-rpms
-
+subscription-manager repos --enable=rh-gluster-3-for-rhel-7-server-rpms
+yum -y update --exclude=WALinuxAgent
         # CNS yum pre-reqs
-        yum -y install rpcbind redhat-storage-server gluster-block
+yum -y install rpcbind redhat-storage-server gluster-block
 
         # CNS config pre-reqs
-        systemctl add-wants multi-user rpcbind.service
-        systemctl enable rpcbind.service
-        systemctl start rpcbind.service
+systemctl add-wants multi-user rpcbind.service
+systemctl enable rpcbind.service
+systemctl start rpcbind.service
 
         # Gluster pre-reqs
-        modprobe dm_thin_pool
-        modprobe dm_multipath
-        modprobe target_core_user
+modprobe dm_thin_pool
+modprobe dm_multipath
+modprobe target_core_user
 
         # Persist gluster pre-reqs
-        echo dm_thin_pool >/etc/modules-load.d/dm_thin_pool.conf
-        echo dm_multipath >/etc/modules-load.d/dm_multipath.conf
-        echo target_core_user >/etc/modules-load.d/target_core_user.conf
+echo dm_thin_pool >/etc/modules-load.d/dm_thin_pool.conf
+echo dm_multipath >/etc/modules-load.d/dm_multipath.conf
+echo target_core_user >/etc/modules-load.d/target_core_user.conf
 
 
 
