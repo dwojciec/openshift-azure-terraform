@@ -13,3 +13,5 @@
 .terraform.tfstate.lock.info
 terraform.tfvars
 *.tfplan
+.terraform
+.terraform.tfstate.lock.info
