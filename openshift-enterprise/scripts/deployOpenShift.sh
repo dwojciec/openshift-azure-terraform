@@ -499,7 +499,7 @@ openshift_override_hostname_check=true
 osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
 
 
 # apply updated node defaults
@@ -545,8 +545,8 @@ openshift_logging_storage_volume_name=logging
 openshift_logging_storage_volume_size=10Gi
 openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
+openshift_master_logging_public_url=https://kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
-
 
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
@@ -654,7 +654,7 @@ openshift_clock_enabled=true
 
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
 
 
 # apply updated node defaults
@@ -702,6 +702,7 @@ openshift_logging_storage_volume_name=logging
 openshift_logging_storage_volume_size=10Gi
 openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
+openshift_master_logging_public_url=https://kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 
 # Setup storage for etcd2, for the new Service Broker
