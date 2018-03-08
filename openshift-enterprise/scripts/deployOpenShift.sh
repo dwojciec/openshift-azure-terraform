@@ -493,7 +493,6 @@ openshift_install_examples=true
 deployment_type=openshift-enterprise
 docker_udev_workaround=true
 openshift_use_dnsmasq=true
-openshift_disable_check=disk_availability
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
@@ -644,7 +643,6 @@ openshift_install_examples=true
 deployment_type=openshift-enterprise
 docker_udev_workaround=true
 openshift_use_dnsmasq=true
-openshift_disable_check=disk_availability
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
@@ -654,7 +652,7 @@ openshift_clock_enabled=true
 
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
 
 # apply updated node defaults

@@ -75,3 +75,6 @@ $ cd <repo> && rm *terraform.tfstate
 ### Troubleshooting
 
 If the deployment gets in an inconsistent state (repeated `terraform apply` commands fail, or output references to leases that no longer exist), you may need to manually reconcile. Destroy the `<yourResourceGroup>` resource group, run `terraform remote config -disable` and delete all `terraform.tfstate*` files from `os`, follow the above instructions again.
+
+During the OCP installation you can check from the bastion host the content of /var/lib/waagent/custom-script/download/0 directory and the 2 files stdout and stderr.
+
