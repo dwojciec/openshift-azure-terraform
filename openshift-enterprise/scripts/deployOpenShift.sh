@@ -484,7 +484,7 @@ nodes
 nfs
 master0
 new_nodes
-glusterfs
+#glusterfs
 
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
@@ -560,8 +560,8 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 
 # GlusterFS
-openshift_storage_glusterfs_wipe=True
-openshift_storage_glusterfs_storageclass=True
+#openshift_storage_glusterfs_wipe=True
+#openshift_storage_glusterfs_storageclass=True
 
 
 # host group for masters
@@ -597,21 +597,21 @@ do
 done
 
 # glusterfs
-echo "[glusterfs]" >>/etc/ansible/hosts
-for (( c=0; c<$MASTERCOUNT; c++ ))
-do
-  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+#echo "[glusterfs]" >>/etc/ansible/hosts
+#for (( c=0; c<$MASTERCOUNT; c++ ))
+#do
+#  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
-for (( c=0; c<$INFRACOUNT; c++ ))
-do
-  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+#for (( c=0; c<$INFRACOUNT; c++ ))
+#do
+#  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
-for (( c=0; c<$NODECOUNT; c++ ))
-do
-  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+#for (( c=0; c<$NODECOUNT; c++ ))
+#do
+#  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
 
 # Create new_nodes group
@@ -632,7 +632,7 @@ etcd
 nfs
 lb
 new_nodes
-glusterfs
+#glusterfs
 master0
 
 # Set variables common for all OSEv3 hosts
@@ -715,8 +715,8 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 
 # GlusterFS
-openshift_storage_glusterfs_wipe=True
-openshift_storage_glusterfs_storageclass=True
+#openshift_storage_glusterfs_wipe=True
+#openshift_storage_glusterfs_storageclass=True
 
 # host group for masters
 [masters]
@@ -756,22 +756,22 @@ do
   echo "$NODE-$c openshift_node_labels=\"{'type': 'app', 'zone': 'default'}\" openshift_hostname=$NODE-$c" >> /etc/ansible/hosts
 done
 
-# glusterfs
-echo "[glusterfs]" >>/etc/ansible/hosts
-for (( c=0; c<$MASTERCOUNT; c++ ))
-do
-  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+# glusterfs CNS installation
+#echo "[glusterfs]" >>/etc/ansible/hosts
+#for (( c=0; c<$MASTERCOUNT; c++ ))
+#do
+#  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
-for (( c=0; c<$INFRACOUNT; c++ ))
-do
-  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+#for (( c=0; c<$INFRACOUNT; c++ ))
+#do
+#  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
-for (( c=0; c<$NODECOUNT; c++ ))
-do
-  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
+#for (( c=0; c<$NODECOUNT; c++ ))
+#do
+#  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+#done
 
 # Create new_nodes group
 
