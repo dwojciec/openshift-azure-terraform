@@ -497,7 +497,7 @@ openshift_use_dnsmasq=true
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
-os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 # disable checks
 openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
@@ -522,17 +522,17 @@ openshift_hosted_registry_storage_volume_name=registry
 openshift_hosted_registry_storage_volume_size=10Gi
 
 # Setup metrics
-openshift_hosted_metrics_deploy=true
-# As of this writing, there's a bug in the metrics deployment.
-# You'll see the metrics failing to deploy 59 times, it will, though, succeed the 60'th time.
-openshift_hosted_metrics_storage_kind=nfs
-openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_metrics_storage_host=$MASTER-0
-openshift_metrics_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_metrics_storage_nfs_directory=/exports
-openshift_hosted_metrics_storage_volume_name=metrics
-openshift_hosted_metrics_storage_volume_size=10Gi
+openshift_metrics_install_metrics=true
+openshift_metrics_storage_kind=nfs
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_host=$MASTER-0
+openshift_metrics_storage_nfs_directory=/data
+openshift_metrics_storage_volume_name=metrics
+openshift_metrics_storage_volume_size=10Gi
 openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
+openshift_metrics_install_hawkular_agent=true
+openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/metrics
+
 
 # Setup logging
 openshift_logging_install_logging=true
@@ -546,7 +546,6 @@ openshift_logging_storage_volume_size=10Gi
 openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
@@ -557,7 +556,27 @@ openshift_hosted_etcd_storage_volume_name=etcd-vol2
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+openshift_template_service_broker_namespaces=['openshift']
+openshift_enable_service_catalog=true
+ansible_service_broker_install=true
+template_service_broker_install=true
+openshift_service_catalog_image_version=latest
+ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
+ansible_service_broker_registry_url="registry.access.redhat.com"
+openshift_service_catalog_image_prefix=registry.access.redhat.com/openshift3/ose-
 
+# ** Prometheus **
+openshift_hosted_prometheus_deploy=true
+openshift_prometheus_namespace=openshift-metrics
+openshift_prometheus_node_selector={"region":"infra"}
+openshift_prometheus_storage_kind=nfs
+openshift_prometheus_storage_access_modes=['ReadWriteOnce']
+openshift_prometheus_storage_host=$MASTER-0.$DOMAIN
+openshift_prometheus_storage_nfs_directory=/data
+openshift_prometheus_storage_volume_name=prometheus
+openshift_prometheus_storage_volume_size=20Gi
+openshift_prometheus_storage_labels={'storage':'prometheus'}
+openshift_prometheus_storage_type='pvc'
 
 # GlusterFS
 #openshift_storage_glusterfs_wipe=True
@@ -650,7 +669,7 @@ osm_use_cockpit=true
 # enable ntp on masters to ensure proper failover
 openshift_clock_enabled=true
 
-os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 # disable checks
 openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
@@ -676,18 +695,16 @@ openshift_hosted_registry_storage_nfs_directory=/exports
 openshift_hosted_registry_storage_volume_name=registry
 openshift_hosted_registry_storage_volume_size=5Gi
 
-# Setup metrics
-openshift_hosted_metrics_deploy=true
-# As of this writing, there's a bug in the metrics deployment.
-# You'll see the metrics failing to deploy 59 times, it will, though, succeed the 60'th time.
-openshift_hosted_metrics_storage_kind=nfs
-openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_hosted_metrics_storage_host=$MASTER-0
-openshift_metrics_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_metrics_storage_nfs_directory=/exports
-openshift_hosted_metrics_storage_volume_name=metrics
-openshift_hosted_metrics_storage_volume_size=10Gi
-openshift_hosted_metrics_public_url=hawkular-metrics.$ROUTING
+openshift_metrics_install_metrics=true
+openshift_metrics_storage_kind=nfs
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_host=$MASTER-0
+openshift_metrics_storage_nfs_directory=/data
+openshift_metrics_storage_volume_name=metrics
+openshift_metrics_storage_volume_size=10Gi
+openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
+openshift_metrics_install_hawkular_agent=true
+openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/metrics
 
 # Setup logging
 openshift_logging_install_logging=true
@@ -701,7 +718,7 @@ openshift_logging_storage_volume_size=10Gi
 openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
+
 
 # Setup storage for etcd2, for the new Service Broker
 openshift_hosted_etcd_storage_kind=nfs
@@ -712,7 +729,27 @@ openshift_hosted_etcd_storage_volume_name=etcd-vol2
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+openshift_template_service_broker_namespaces=['openshift']
+openshift_enable_service_catalog=true
+ansible_service_broker_install=true
+template_service_broker_install=true
+openshift_service_catalog_image_version=latest
+ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
+ansible_service_broker_registry_url="registry.access.redhat.com"
+openshift_service_catalog_image_prefix=registry.access.redhat.com/openshift3/ose-
 
+# ** Prometheus **
+openshift_hosted_prometheus_deploy=true
+openshift_prometheus_namespace=openshift-metrics
+openshift_prometheus_node_selector={"region":"infra"}
+openshift_prometheus_storage_kind=nfs
+openshift_prometheus_storage_access_modes=['ReadWriteOnce']
+openshift_prometheus_storage_host=$MASTER-0.$DOMAIN
+openshift_prometheus_storage_nfs_directory=/data
+openshift_prometheus_storage_volume_name=prometheus
+openshift_prometheus_storage_volume_size=20Gi
+openshift_prometheus_storage_labels={'storage':'prometheus'}
+openshift_prometheus_storage_type='pvc'
 
 # GlusterFS
 #openshift_storage_glusterfs_wipe=True
