@@ -1,6 +1,8 @@
 
 Deploy OpenShift Enterprise on Azure using Terraform and Ansible
 ==================
+.... Still in development...
+
 
 This script allow you to deploy an OpenShift Enterprise v3.7.0 in best practices on Microsoft Azure.
 
