@@ -484,7 +484,7 @@ nodes
 nfs
 master0
 new_nodes
-#glusterfs
+glusterfs
 
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
@@ -570,6 +570,8 @@ openshift_service_catalog_image_version=latest
 ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
 ansible_service_broker_registry_url="registry.access.redhat.com"
 openshift_service_catalog_image_prefix=registry.access.redhat.com/openshift3/ose-
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
+template_service_broker_selector={"region":"infra"}
 
 # ** Prometheus **
 openshift_hosted_prometheus_deploy=true
@@ -585,9 +587,10 @@ openshift_prometheus_storage_labels={'storage':'prometheus'}
 openshift_prometheus_storage_type='pvc'
 
 # GlusterFS
-#openshift_storage_glusterfs_wipe=True
-#openshift_storage_glusterfs_storageclass=True
-
+openshift_storage_glusterfs_wipe=True
+openshift_storage_glusterfs_storageclass=True
+openshift_storage_glusterfs_namespace=glusterfs 
+openshift_storage_glusterfs_name=storage
 
 # host group for masters
 [masters]
@@ -622,21 +625,21 @@ do
 done
 
 # glusterfs
-#echo "[glusterfs]" >>/etc/ansible/hosts
-#for (( c=0; c<$MASTERCOUNT; c++ ))
-#do
-#  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+echo "[glusterfs]" >>/etc/ansible/hosts
+for (( c=0; c<$MASTERCOUNT; c++ ))
+do
+  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+done
 
-#for (( c=0; c<$INFRACOUNT; c++ ))
-#do
-#  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+for (( c=0; c<$INFRACOUNT; c++ ))
+do
+  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+done
 
-#for (( c=0; c<$NODECOUNT; c++ ))
-#do
-#  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+for (( c=0; c<$NODECOUNT; c++ ))
+do
+  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+done
 
 
 # Create new_nodes group
@@ -657,7 +660,7 @@ etcd
 nfs
 lb
 new_nodes
-#glusterfs
+glusterfs
 master0
 
 # Set variables common for all OSEv3 hosts
@@ -741,6 +744,7 @@ openshift_hosted_etcd_storage_volume_name=etcd-vol2
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
 openshift_template_service_broker_namespaces=['openshift']
 openshift_enable_service_catalog=true
 ansible_service_broker_install=true
@@ -749,6 +753,7 @@ openshift_service_catalog_image_version=latest
 ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
 ansible_service_broker_registry_url="registry.access.redhat.com"
 openshift_service_catalog_image_prefix=registry.access.redhat.com/openshift3/ose-
+template_service_broker_selector={"region":"infra"}
 
 # ** Prometheus **
 openshift_hosted_prometheus_deploy=true
@@ -764,8 +769,10 @@ openshift_prometheus_storage_labels={'storage':'prometheus'}
 openshift_prometheus_storage_type='pvc'
 
 # GlusterFS
-#openshift_storage_glusterfs_wipe=True
-#openshift_storage_glusterfs_storageclass=True
+openshift_storage_glusterfs_wipe=True
+openshift_storage_glusterfs_storageclass=True
+openshift_storage_glusterfs_namespace=glusterfs 
+openshift_storage_glusterfs_name=storage
 
 # host group for masters
 [masters]
@@ -806,21 +813,21 @@ do
 done
 
 # glusterfs CNS installation
-#echo "[glusterfs]" >>/etc/ansible/hosts
-#for (( c=0; c<$MASTERCOUNT; c++ ))
-#do
-#  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+echo "[glusterfs]" >>/etc/ansible/hosts
+for (( c=0; c<$MASTERCOUNT; c++ ))
+do
+  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+done
 
-#for (( c=0; c<$INFRACOUNT; c++ ))
-#do
-#  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+for (( c=0; c<$INFRACOUNT; c++ ))
+do
+  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+done
 
-#for (( c=0; c<$NODECOUNT; c++ ))
-#do
-#  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-#done
+for (( c=0; c<$NODECOUNT; c++ ))
+do
+  echo "$NODE-$c  " >> /etc/ansible/hosts
+done
 
 # Create new_nodes group
 
@@ -831,27 +838,6 @@ EOF
 
 fi
 
-# Create and distribute hosts file to all nodes, this is due to us having to use 
-(
-echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4"
-echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6"
-for (( c=0; c<$MASTERCOUNT; c++ ))
-do
-	ping -c 1 $MASTER-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2 }'|sed -e 's/(//' -e 's/)//'i -e "s/.net/.net $MASTER-$c/"
-done
-
-for (( c=0; c<$INFRACOUNT; c++ ))
-do
-	ping -c 1 $INFRA-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2  }'|sed -e 's/(//' -e 's/)//' -e "s/.net/.net $INFRA-$c/"
-done
-
-for (( c=0; c<$NODECOUNT; c++ ))
-do
-	ping -c 1 $NODE-$c 2>/dev/null|grep ocp|grep PING|awk '{ print $3 " " $2  }'|sed -e 's/(//' -e 's/)//' -e "s/.net/.net $NODE-$c/"
-done
-) >/tmp/hosts
-
-chmod a+r /tmp/hosts
 #echo "preinstall.yml playbook"
 # Create correct hosts file on all servers
 #runuser -l $SUDOUSER -c "ansible-playbook ~/preinstall.yml"
