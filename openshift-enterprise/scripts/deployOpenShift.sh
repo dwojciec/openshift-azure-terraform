@@ -500,10 +500,14 @@ osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 # disable checks
 openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
-
+osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
+osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
+openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf'], 'enable-controller-attach-detach': ['true']}
+openshift_master_access_token_max_seconds=2419200
+openshift_cloudprovider_kind=azure
 
 # apply updated node defaults
-openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
+# openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
 
 openshift_master_cluster_hostname=$MASTERPUBLICIPHOSTNAME
 openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
@@ -667,6 +671,11 @@ openshift_use_dnsmasq=true
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
+osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
+osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
+openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf'], 'enable-controller-attach-detach': ['true']}
+openshift_master_access_token_max_seconds=2419200
+openshift_cloudprovider_kind=azure
 
 # enable ntp on masters to ensure proper failover
 openshift_clock_enabled=true
@@ -677,7 +686,7 @@ openshift_disable_check=memory_availability,disk_availability,docker_storage,doc
 
 
 # apply updated node defaults
-openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
+# openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
 
 
 openshift_master_cluster_method=native
@@ -859,6 +868,11 @@ runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager stat
 sleep 5
 runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
 runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
+
+# correct PVC issue for logging
+runuser -l $SUDOUSER -c "mv /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml.backupocp"
+runuser -l $SUDOUSER -c "curl -o /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml https://raw.githubusercontent.com/openshift-cherrypick-robot/openshift-ansible/e8e6c1880cb7f3be99790f2779020bcf1f65e1fe/roles/openshift_logging/tasks/install_logging.yaml"
+
 
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
 echo $(date) " - Installing OpenShift Container Platform via Ansible Playbook"
