@@ -855,9 +855,6 @@ sleep 5
 runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
 runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
 
-# correct PVC issue for logging
-runuser -l $SUDOUSER -c "mv /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml.backupocp"
-runuser -l $SUDOUSER -c "curl -o /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml https://raw.githubusercontent.com/openshift-cherrypick-robot/openshift-ansible/e8e6c1880cb7f3be99790f2779020bcf1f65e1fe/roles/openshift_logging/tasks/install_logging.yaml"
 
 
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
