@@ -607,7 +607,7 @@ EOF
 
 for (( c=0; c<$INFRACOUNT; c++ ))
 do
-  echo "$INFRA-$c openshift_node_labels=\"{'type': 'infra', 'zone': 'default'}\" openshift_hostname=$INFRA-$c" >> /etc/ansible/hosts
+  echo "$INFRA-$c openshift_node_labels=\"{'region': 'infra', 'zone': 'default'}\" openshift_hostname=$INFRA-$c" >> /etc/ansible/hosts
 done
 
 # Loop to add Nodes
