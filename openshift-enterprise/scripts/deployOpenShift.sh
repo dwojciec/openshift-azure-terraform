@@ -431,6 +431,32 @@ cat > /home/${SUDOUSER}/setup-azure-node.yml <<EOF
        seconds: 90
 EOF
 
+# Create a Playbook to include docker-1.13 in the excludes list see
+# https://access.redhat.com/solutions/3376031
+# run on all nodes
+
+cat > /home/${SUDOUSER}/docker_1.13_fix_playbook.yml <<EOF
+- hosts: nodes
+  tasks:
+  - set_fact:
+      current_value: "{{ lookup('ini', 'exclude section=main  file=/etc/yum.conf') }}"
+
+  - debug:
+      msg: "The current Value of the yum exclude package is: {{current_value}}"
+
+  - debug:
+      msg: "The expected new Value of the yum exclude package is: '{{current_value}} docker*1.13*'"
+
+  - ini_file:
+      path: /etc/yum.conf
+      section: main
+      option: exclude
+      value: "{{current_value}} docker*1.13*"
+      backup: yes
+    become: true
+EOF
+
+
 # Create Playbook to delete stuck Master nodes and set as not schedulable
 
 cat > /home/${SUDOUSER}/deletestucknodes.yml <<EOF
@@ -855,6 +881,11 @@ sleep 5
 runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
 runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
 
+# check issue https://access.redhat.com/solutions/3376031 
+echo $(date) " - downgrade docker-client on all nodes"
+runuser -l $SUDOUSER -c "ansible all -m shell -a \"yum -y downgrade docker-client-1.12.6 docker-common-1.12.6 docker-rhel-push-plugin-1.12.6 docker-1.12.6\""
+runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=docker state=restarted\""
+runuser -l $SUDOUSER -c "ansible-playbook ~/docker_1.13_fix_playbook.yml"
 
 
 # Initiating installation of OpenShift Container Platform using Ansible Playbook

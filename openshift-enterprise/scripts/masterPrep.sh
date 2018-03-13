@@ -175,5 +175,4 @@ echo dm_multipath >/etc/modules-load.d/dm_multipath.conf
 echo target_core_user >/etc/modules-load.d/target_core_user.conf
 
 
-
 echo $(date) " - Script Complete"

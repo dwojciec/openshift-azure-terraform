@@ -81,4 +81,5 @@ yum -y install atomic-openshift-utils
 mv /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml.backupocp
 sudo curl -o /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml https://raw.githubusercontent.com/openshift-cherrypick-robot/openshift-ansible/e8e6c1880cb7f3be99790f2779020bcf1f65e1fe/roles/openshift_logging/tasks/install_logging.yaml
 
+
 echo $(date) " - Script Complete"
