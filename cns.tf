@@ -77,7 +77,6 @@ connection {
  
  storage_data_disk {
     name          = "${var.openshift_cluster_prefix}-glusterfs-pool1${count.index}"
-    vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool1${count.index}.vhd"
     create_option = "Empty"
     disk_size_gb  = 512
     managed_disk_type = "Premium_LRS"
@@ -85,7 +84,6 @@ connection {
  }
  storage_data_disk {
     name          = "${var.openshift_cluster_prefix}-glusterfs-pool2${count.index}"
-    vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool2${count.index}.vhd"
     create_option = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb  = 512
@@ -93,7 +91,6 @@ connection {
  }
  storage_data_disk {
     name          = "${var.openshift_cluster_prefix}-glusterfs-pool3${count.index}"
-    vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool3${count.index}.vhd"
     create_option = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb  = 512
