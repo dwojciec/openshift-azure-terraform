@@ -24,8 +24,7 @@ resource "azurerm_virtual_machine" "node" {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
-
-  provisioner "file" {
+provisioner "file" {
     source      = "${var.openshift_script_path}/nodePrep.sh"
     destination = "nodePrep.sh"
   }
@@ -64,6 +63,7 @@ resource "azurerm_virtual_machine" "node" {
     vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-osdisk${count.index}.vhd"
     caching       = "ReadWrite"
     create_option = "FromImage"
+    disk_size_gb  = 32
   }
 
   storage_data_disk {
@@ -72,26 +72,5 @@ resource "azurerm_virtual_machine" "node" {
     disk_size_gb  = "${var.data_disk_size}"
     create_option = "Empty"
     lun           = 0
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-node-glusterfs-pool1${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-glusterfs-pool1${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 1
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-node-glusterfs-pool2${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-glusterfs-pool2${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 2
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-node-glusterfs-pool3${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-glusterfs-pool3${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 3
   }
 }

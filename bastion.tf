@@ -74,7 +74,7 @@ resource "azurerm_virtual_machine_extension" "deploy_open_shift_bastion" {
    type                       = "CustomScript"
    type_handler_version       = "2.0"
    auto_upgrade_minor_version = true
-   depends_on                 = ["azurerm_virtual_machine.infra", "azurerm_virtual_machine.node" , "azurerm_virtual_machine.master"]
+   depends_on                 = ["azurerm_virtual_machine.infra", "azurerm_virtual_machine.node" , "azurerm_virtual_machine.master" , "azurerm_virtual_machine.cns"]
 
    settings = <<SETTINGS
  {
@@ -86,7 +86,7 @@ SETTINGS
 #
    protected_settings = <<SETTINGS
   {
-    "commandToExecute": "bash deployOpenShift.sh ${var.admin_username} ${var.openshift_password} ${base64encode(file(var.connection_private_ssh_key_path))} ${var.openshift_cluster_prefix}-master ${azurerm_public_ip.openshift_master_pip.fqdn} ${azurerm_public_ip.openshift_master_pip.ip_address} ${var.openshift_cluster_prefix}-infra ${var.openshift_cluster_prefix}-node ${var.node_instance_count} ${var.infra_instance_count} ${var.master_instance_count} ${azurerm_public_ip.infra_lb_pip.ip_address}.${var.default_sub_domain_type} ${var.openshift_cluster_prefix} ${azurerm_storage_account.registry_storage_account.name} ${azurerm_storage_account.registry_storage_account.primary_access_key} ${var.tenant_id} ${var.subscription_id} ${var.aad_client_id} ${var.aad_client_secret} ${azurerm_resource_group.rg.name} ${azurerm_resource_group.rg.location} ${var.key_vault_name} "
+    "commandToExecute": "bash deployOpenShift.sh ${var.admin_username} ${var.openshift_password} ${base64encode(file(var.connection_private_ssh_key_path))} ${var.openshift_cluster_prefix}-master ${azurerm_public_ip.openshift_master_pip.fqdn} ${azurerm_public_ip.openshift_master_pip.ip_address} ${var.openshift_cluster_prefix}-infra ${var.openshift_cluster_prefix}-node ${var.node_instance_count} ${var.infra_instance_count} ${var.master_instance_count} ${azurerm_public_ip.infra_lb_pip.ip_address}.${var.default_sub_domain_type} ${var.openshift_cluster_prefix} ${azurerm_storage_account.registry_storage_account.name} ${azurerm_storage_account.registry_storage_account.primary_access_key} ${var.tenant_id} ${var.subscription_id} ${var.aad_client_id} ${var.aad_client_secret} ${azurerm_resource_group.rg.name} ${azurerm_resource_group.rg.location} ${var.cns_instance_count} ${var.openshift_cluster_prefix}-cns ${azurekey-registry} ${var.key_vault_name} "
   }
  SETTINGS
  }

@@ -62,24 +62,18 @@ subscription-manager repos --disable="*"
 subscription-manager repos \
     --enable="rhel-7-server-rpms" \
     --enable="rhel-7-server-extras-rpms" \
+    --enable="rhel-7-server-ose-3.9-rpms" \
     --enable="rhel-7-fast-datapath-rpms" \
-    --enable="rhel-7-server-ose-3.7-rpms"
+    --enable="rhel-7-server-ansible-2.4-rpms"
 
 # Install base packages and update system to latest packages
 echo $(date) " - Install base packages and update system to latest packages"
 
 yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct httpd-tools
-yum -y update --exclude=WALinuxAgent
 
 # Install OpenShift utilities
 echo $(date) " - Installing OpenShift utilities"
 
-yum -y install atomic-openshift-utils
-
-
-# correct PVC issue for logging
-mv /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml.backupocp
-sudo curl -o /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-cluster/roles/openshift_logging/tasks/install_logging.yaml https://raw.githubusercontent.com/openshift-cherrypick-robot/openshift-ansible/e8e6c1880cb7f3be99790f2779020bcf1f65e1fe/roles/openshift_logging/tasks/install_logging.yaml
-
+yum -y install ansible atomic-openshift-utils
 
 echo $(date) " - Script Complete"

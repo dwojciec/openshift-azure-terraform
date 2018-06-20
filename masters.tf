@@ -14,6 +14,7 @@ resource "azurerm_virtual_machine" "master" {
 
   tags {
     displayName = "${var.openshift_cluster_prefix}-master VM Creation"
+    environment = "${var.environment}"
   }
 
 connection {
@@ -25,8 +26,7 @@ connection {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
-
-  provisioner "file" {
+provisioner "file" {
     source      = "${var.openshift_script_path}/masterPrep.sh"
     destination = "masterPrep.sh"
   }
@@ -67,7 +67,7 @@ connection {
     vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-master-osdisk${count.index}.vhd"
     caching       = "ReadWrite"
     create_option = "FromImage"
-    disk_size_gb  = 60
+    disk_size_gb  = 32
   }
 
   storage_data_disk  {
@@ -77,26 +77,4 @@ connection {
     create_option = "Empty"
     lun           = 0
   }
- 
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool1${count.index}"
-    vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool1${count.index}.vhd"
-    create_option = "Empty"
-    disk_size_gb  = 20
-    lun           = 1
- }
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool2${count.index}"
-    vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool2${count.index}.vhd"
-    create_option = "Empty"
-    disk_size_gb  = 20
-    lun           = 2
- }
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool3${count.index}"
-    vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}--glusterfs-pool3${count.index}.vhd"
-    create_option = "Empty"
-    disk_size_gb  = 20
-    lun           = 3
- } 
 }

@@ -41,11 +41,21 @@ resource "azurerm_storage_account" "nodedata_storage_account" {
 }
 
 resource "azurerm_storage_account" "registry_storage_account" {
-  name                     = "${var.openshift_cluster_prefix}regsa"
+  name                     = "${var.storage_account_name}"
   resource_group_name      = "${azurerm_resource_group.rg.name}"
   location                 = "${azurerm_resource_group.rg.location}"
   account_tier             = "${var.storage_account_tier}"
   account_replication_type = "${var.storage_account_replication_type}"
+}
+
+data "azurerm_storage_account" "registry_storage_account" {
+  name                 = "${var.storage_account_name}"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  location             = "${azurerm_resource_group.rg.location}"
+}
+
+output "azurekey-registry" {
+  value = "${data.azurerm_storage_account.registry_storage_account.primary_access_key}"
 }
 
 resource "azurerm_storage_account" "persistent_volume_storage_account" {

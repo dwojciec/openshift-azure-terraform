@@ -1,20 +1,20 @@
 # ******* MASTER LOAD BALANCER ***********
 
 resource "azurerm_lb" "master_lb" {
-  name                = "masterloadbalancer"
+  name                = "masterExternalLB"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
   depends_on          = ["azurerm_public_ip.openshift_master_pip"]
 
   frontend_ip_configuration {
-    name                 = "LoadBalancerFrontEnd"
+    name                 = "masterApiFrontend"
     public_ip_address_id = "${azurerm_public_ip.openshift_master_pip.id}"
   }
 }
 
 resource "azurerm_lb_backend_address_pool" "master_lb" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
-  name                = "loadBalancerBackEnd"
+  name                = "masterAPIBackend"
   loadbalancer_id     = "${azurerm_lb.master_lb.id}"
   depends_on          = ["azurerm_lb.master_lb"]
 }
@@ -22,8 +22,8 @@ resource "azurerm_lb_backend_address_pool" "master_lb" {
 resource "azurerm_lb_probe" "master_lb" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
   loadbalancer_id     = "${azurerm_lb.master_lb.id}"
-  name                = "8443Probe"
-  port                = 8443
+  name                = "masterHealthProbe"
+  port                = 443
   interval_in_seconds = 5
   number_of_probes    = 2
   protocol            = "Tcp"
@@ -43,11 +43,11 @@ resource "azurerm_lb_probe" "master_cockpit_lb" {
 resource "azurerm_lb_rule" "master_lb" {
   resource_group_name            = "${azurerm_resource_group.rg.name}"
   loadbalancer_id                = "${azurerm_lb.master_lb.id}"
-  name                           = "OpenShiftAdminConsole"
+  name                           = "ocpApiHealth"
   protocol                       = "Tcp"
-  frontend_port                  = 8443
-  backend_port                   = 8443
-  frontend_ip_configuration_name = "LoadBalancerFrontEnd"
+  frontend_port                  = 443
+  backend_port                   = 443
+  frontend_ip_configuration_name = "masterApiFrontend"
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.master_lb.id}"
   load_distribution              = "SourceIP"
   idle_timeout_in_minutes        = 30

@@ -62,8 +62,9 @@ subscription-manager repos --disable="*"
 subscription-manager repos \
     --enable="rhel-7-server-rpms" \
     --enable="rhel-7-server-extras-rpms" \
+    --enable="rhel-7-server-ose-3.9-rpms" \
     --enable="rhel-7-fast-datapath-rpms" \
-    --enable="rhel-7-server-ose-3.7-rpms"
+    --enable="rhel-7-server-ansible-2.4-rpms"
 
 # Install and enable Cockpit
 echo $(date) " - Installing and enabling Cockpit"
@@ -77,15 +78,11 @@ systemctl start cockpit.socket
 echo $(date) " - Install base packages and update system to latest packages"
 
 yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct httpd-tools
-yum -y update --exclude=WALinuxAgent
 
-# Install Docker 1.12.6
-echo $(date) " - Installing Docker 1.12.6"
+# Install Docker 1.13.1
+echo $(date) " - Installing Docker 1.13.1"
 
-yum -y install docker-1.12.6
-# to lock docker 1.12 version
-yum -y install yum-plugin-versionlock
-yum versionlock docker-client-1.12.6 docker-common-1.12.6 docker-rhel-push-plugin-1.12.6 docker-1.12.6
+yum -y install  docker-1.13.1
 sed -i -e "s#^OPTIONS='--selinux-enabled'#OPTIONS='--selinux-enabled --insecure-registry 172.30.0.0/16'#" /etc/sysconfig/docker
 
 
@@ -115,29 +112,6 @@ fi
 
 systemctl enable docker
 systemctl start docker
-
-# Container Native Storage pre-req on infra hosts
-subscription-manager repos --enable=rh-gluster-3-for-rhel-7-server-rpms
-yum -y update --exclude=WALinuxAgent
-        # CNS yum pre-reqs
-yum -y install rpcbind redhat-storage-server gluster-block
-
-        # CNS config pre-reqs
-systemctl add-wants multi-user rpcbind.service
-systemctl enable rpcbind.service
-systemctl start rpcbind.service
-
-        # Gluster pre-reqs
-modprobe dm_thin_pool
-modprobe dm_multipath
-modprobe target_core_user
-
-        # Persist gluster pre-reqs
-echo dm_thin_pool >/etc/modules-load.d/dm_thin_pool.conf
-echo dm_multipath >/etc/modules-load.d/dm_multipath.conf
-echo target_core_user >/etc/modules-load.d/target_core_user.conf
-
-
 
 echo $(date) " - Script Complete"
 

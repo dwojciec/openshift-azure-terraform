@@ -28,6 +28,10 @@ AADCLIENTID=${18}
 AADCLIENTSECRET=${19}
 RESOURCEGROUP=${20}
 LOCATION=${21}
+CNSCOUNT=${22}
+CNS=${23}
+ACCOUNTKEY_REGISTRY=${24}
+
 
 
 MASTERLOOP=$((MASTERCOUNT - 1))
@@ -58,7 +62,9 @@ echo "18 - AADCLIENTID:" $AADCLIENTID
 echo "19 - AADCLIENTSECRET:" $AADCLIENTSECRET
 echo "20 - RESOURCEGROUP:" $RESOURCEGROUP
 echo "21 - LOCATION:" $LOCATION
-
+echo "22 - CNSCOUNT:" $CNSCOUNT
+echo "23 - CNS:" $CNS
+echo "24 - ACCOUNTKEY_REGISTRY:" $ACCOUNTKEY_REGISTRY
 # Generate private keys for use by Ansible
 echo $(date) " - Generating Private keys for use by Ansible for OpenShift Installation"
 
@@ -196,7 +202,7 @@ cat > /home/${SUDOUSER}/setup-azure-master.yml <<EOF
   - vars.yml
   become: yes
   vars:
-    azure_conf_dir: /etc/azure
+    azure_conf_dir: /etc/origin/cloudprovider
     azure_conf: "{{ azure_conf_dir }}/azure.conf"
     master_conf: /etc/origin/master/master-config.yaml
   handlers:
@@ -213,7 +219,7 @@ cat > /home/${SUDOUSER}/setup-azure-master.yml <<EOF
     file:
       state: directory
       path: "{{ azure_conf_dir }}"
-  - name: populate /etc/azure/azure.conf
+  - name: populate /etc/origin/cloudprovider/azure.conf
     copy:
       dest: "{{ azure_conf }}"
       content: |
@@ -222,7 +228,13 @@ cat > /home/${SUDOUSER}/setup-azure-master.yml <<EOF
           "aadClientSecret" : "{{ g_aadClientSecret }}",
           "subscriptionID" : "{{ g_subscriptionId }}",
           "tenantID" : "{{ g_tenantId }}",
+          "aadTenantID" : "{{ g_tenantId }}",
           "resourceGroup": "{{ g_resourceGroup }}",
+          "location": "{{ g_location }}",
+          "cloud": "AzurePublicCloud",
+          "vnetName": "openshiftvnet:,
+          "securityGroupName": "node-nsg",
+          "primaryAvailabilitySetName": "ocp-app-instances"
         }
     notify:
     - restart origin-master-api
@@ -263,7 +275,7 @@ cat > /home/${SUDOUSER}/setup-azure-master.yml <<EOF
   - vars.yml
   become: yes
   vars:
-    azure_conf_dir: /etc/azure
+    azure_conf_dir: /etc/origin/cloudprovider
     azure_conf: "{{ azure_conf_dir }}/azure.conf"
     master_conf: /etc/origin/master/master-config.yaml
   handlers:
@@ -280,7 +292,7 @@ cat > /home/${SUDOUSER}/setup-azure-master.yml <<EOF
     file:
       state: directory
       path: "{{ azure_conf_dir }}"
-  - name: populate /etc/azure/azure.conf
+  - name: populate /etc/origin/cloudprovider/azure.conf
     copy:
       dest: "{{ azure_conf }}"
       content: |
@@ -330,7 +342,7 @@ cat > /home/${SUDOUSER}/setup-azure-node-master.yml <<EOF
   - vars.yml
   become: yes
   vars:
-    azure_conf_dir: /etc/azure
+    azure_conf_dir: /etc/origin/cloudprovider
     azure_conf: "{{ azure_conf_dir }}/azure.conf"
     node_conf: /etc/origin/node/node-config.yaml
   handlers:
@@ -343,7 +355,7 @@ cat > /home/${SUDOUSER}/setup-azure-node-master.yml <<EOF
     file:
       state: directory
       path: "{{ azure_conf_dir }}"
-  - name: populate /etc/azure/azure.conf
+  - name: populate /etc/origin/cloudprovider/azure.conf
     copy:
       dest: "{{ azure_conf }}"
       content: |
@@ -383,7 +395,7 @@ cat > /home/${SUDOUSER}/setup-azure-node.yml <<EOF
   - vars.yml
   become: yes
   vars:
-    azure_conf_dir: /etc/azure
+    azure_conf_dir: /etc/origin/cloudprovider
     azure_conf: "{{ azure_conf_dir }}/azure.conf"
     node_conf: /etc/origin/node/node-config.yaml
   handlers:
@@ -396,7 +408,7 @@ cat > /home/${SUDOUSER}/setup-azure-node.yml <<EOF
     file:
       state: directory
       path: "{{ azure_conf_dir }}"
-  - name: populate /etc/azure/azure.conf
+  - name: populate /etc/origin/cloudprovider/azure.conf
     copy:
       dest: "{{ azure_conf }}"
       content: |
@@ -430,32 +442,6 @@ cat > /home/${SUDOUSER}/setup-azure-node.yml <<EOF
     pause:
        seconds: 90
 EOF
-
-# Create a Playbook to include docker-1.13 in the excludes list see
-# https://access.redhat.com/solutions/3376031
-# run on all nodes
-
-cat > /home/${SUDOUSER}/docker_1.13_fix_playbook.yml <<EOF
-- hosts: nodes
-  tasks:
-  - set_fact:
-      current_value: "{{ lookup('ini', 'exclude section=main  file=/etc/yum.conf') }}"
-
-  - debug:
-      msg: "The current Value of the yum exclude package is: {{current_value}}"
-
-  - debug:
-      msg: "The expected new Value of the yum exclude package is: '{{current_value}} docker*1.13*'"
-
-  - ini_file:
-      path: /etc/yum.conf
-      section: main
-      option: exclude
-      value: "{{current_value}} docker*1.13*"
-      backup: yes
-    become: true
-EOF
-
 
 # Create Playbook to delete stuck Master nodes and set as not schedulable
 
@@ -515,11 +501,38 @@ glusterfs
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
 ansible_ssh_user=$SUDOUSER
-ansible_become=yes
+ansible_become=true
+openshift_cloudprovider_kind=azure
+osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
+osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
+openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf'], 'enable-controller-attach-detach': ['true']}
 openshift_install_examples=true
 deployment_type=openshift-enterprise
 docker_udev_workaround=true
 openshift_use_dnsmasq=true
+openshift_master_api_port=443
+openshift_master_console_port=443
+openshift_hosted_router_replicas=1
+openshift_hosted_registry_replicas=1
+openshift_master_cluster_method=native
+openshift_node_local_quota_per_fsgroup=512Mi
+
+oreg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
+oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_examples_modify_imagestreams=true
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+
+# Do not uninstall service catalog until post installation. Needs storage class object
+openshift_enable_service_catalog=false
+
+# Setup azure blob registry storage
+openshift_hosted_registry_storage_kind=object
+openshift_hosted_registry_storage_provider=azure_blob
+openshift_hosted_registry_storage_azure_blob_accountname=openshiftregistry
+openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY_REGISTRY
+openshift_hosted_registry_storage_azure_blob_container=registry
+openshift_hosted_registry_storage_azure_blob_realm=core.windows.net
+
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
@@ -542,17 +555,8 @@ openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
 # Enable HTPasswdPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 
-# Configure persistent storage via nfs server on master
-openshift_hosted_registry_storage_kind=nfs
-openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_host=$MASTER-0
-openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_registry_storage_nfs_directory=/exports
-openshift_hosted_registry_storage_volume_name=registry
-openshift_hosted_registry_storage_volume_size=10Gi
-
 # Setup metrics
-openshift_metrics_install_metrics=true
+openshift_metrics_install_metrics=false
 openshift_metrics_storage_kind=nfs
 openshift_metrics_storage_access_modes=['ReadWriteOnce']
 openshift_metrics_storage_host=$MASTER-0
@@ -565,7 +569,7 @@ openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/m
 
 
 # Setup logging
-openshift_logging_install_logging=true
+openshift_logging_install_logging=false
 openshift_logging_storage_kind=nfs
 openshift_logging_storage_access_modes=['ReadWriteOnce']
 openshift_logging_storage_host=$MASTER-0.$DOMAIN
@@ -589,9 +593,9 @@ openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 openshift_template_service_broker_namespaces=['openshift']
-openshift_enable_service_catalog=true
-ansible_service_broker_install=true
-template_service_broker_install=true
+openshift_enable_service_catalog=false
+ansible_service_broker_install=false
+template_service_broker_install=false
 openshift_service_catalog_image_version=latest
 ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
 ansible_service_broker_registry_url="registry.access.redhat.com"
@@ -600,7 +604,7 @@ ansible_service_broker_local_registry_whitelist=['.*-apb$']
 template_service_broker_selector={"region":"infra"}
 
 # ** Prometheus **
-openshift_hosted_prometheus_deploy=true
+openshift_hosted_prometheus_deploy=false
 openshift_prometheus_namespace=openshift-metrics
 openshift_prometheus_node_selector={"region":"infra"}
 openshift_prometheus_storage_kind=nfs
@@ -611,12 +615,6 @@ openshift_prometheus_storage_volume_name=prometheus
 openshift_prometheus_storage_volume_size=20Gi
 openshift_prometheus_storage_labels={'storage':'prometheus'}
 openshift_prometheus_storage_type='pvc'
-
-# GlusterFS
-openshift_storage_glusterfs_wipe=True
-openshift_storage_glusterfs_storageclass=True
-openshift_storage_glusterfs_namespace=glusterfs 
-openshift_storage_glusterfs_name=storage
 
 # host group for masters
 [masters]
@@ -650,23 +648,20 @@ do
   echo "$NODE-$c openshift_node_labels=\"{'region': 'app', 'zone': 'default'}\" openshift_hostname=$NODE-$c" >> /etc/ansible/hosts
 done
 
+# Loop to add CNS Nodes
+
+for (( c=0; c<$CNSCOUNT; c++ ))
+do
+  echo "$CNS-$c openshift_schedulable=True  openshift_hostname=$CNS-$c" >> /etc/ansible/hosts
+done
+
+
 # glusterfs
 echo "[glusterfs]" >>/etc/ansible/hosts
-for (( c=0; c<$MASTERCOUNT; c++ ))
+for (( c=0; c<$CNSCOUNT; c++ ))
 do
-  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
+  echo "$CNS-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
-
-for (( c=0; c<$INFRACOUNT; c++ ))
-do
-  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
-
-for (( c=0; c<$NODECOUNT; c++ ))
-do
-  echo "$NODE-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
-
 
 # Create new_nodes group
 
@@ -692,7 +687,6 @@ master0
 # Set variables common for all OSEv3 hosts
 [OSEv3:vars]
 ansible_ssh_user=$SUDOUSER
-ansible_become=yes
 openshift_install_examples=true
 deployment_type=openshift-enterprise
 docker_udev_workaround=true
@@ -700,11 +694,14 @@ openshift_use_dnsmasq=true
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
-# osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
-# osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
-# openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf'], 'enable-controller-attach-detach': ['true']}
+
+ansible_become=true
+openshift_cloudprovider_kind=azure
+osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
+osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf']}
+openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/origin/cloudprovider/azure.conf'], 'enable-controller-attach-detach': ['true']}
+
 openshift_master_access_token_max_seconds=2419200
-# openshift_cloudprovider_kind=azure
 
 # enable ntp on masters to ensure proper failover
 openshift_clock_enabled=true
@@ -726,16 +723,30 @@ openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
 # Enable HTPasswdPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 
-# Configure persistent storage via nfs server on master
-openshift_hosted_registry_storage_kind=nfs
-openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_host=$MASTER-0
-openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
-openshift_hosted_registry_storage_nfs_directory=/exports
-openshift_hosted_registry_storage_volume_name=registry
-openshift_hosted_registry_storage_volume_size=5Gi
+openshift_master_api_port=443
+openshift_master_console_port=443
+openshift_hosted_router_replicas=3
+openshift_hosted_registry_replicas=1
+openshift_master_cluster_method=native
+openshift_node_local_quota_per_fsgroup=512Mi
 
-openshift_metrics_install_metrics=true
+oreg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
+oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_examples_modify_imagestreams=true
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+# Do not uninstall service catalog until post installation. Needs storage class object
+openshift_enable_service_catalog=false
+
+# Setup azure blob registry storage
+openshift_hosted_registry_storage_kind=object
+openshift_hosted_registry_storage_provider=azure_blob
+openshift_hosted_registry_storage_azure_blob_accountname=openshiftregistry
+openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY_REGISTRY
+openshift_hosted_registry_storage_azure_blob_container=registry
+openshift_hosted_registry_storage_azure_blob_realm=core.windows.net
+
+
+openshift_metrics_install_metrics=false
 openshift_metrics_storage_kind=nfs
 openshift_metrics_storage_access_modes=['ReadWriteOnce']
 openshift_metrics_storage_host=$MASTER-0
@@ -747,7 +758,7 @@ openshift_metrics_install_hawkular_agent=true
 openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/metrics
 
 # Setup logging
-openshift_logging_install_logging=true
+openshift_logging_install_logging=false
 openshift_logging_storage_kind=nfs
 openshift_logging_storage_access_modes=['ReadWriteOnce']
 openshift_logging_storage_host=$MASTER-0.$DOMAIN
@@ -772,9 +783,9 @@ openshift_hosted_etcd_storage_volume_size=1G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 ansible_service_broker_local_registry_whitelist=['.*-apb$']
 openshift_template_service_broker_namespaces=['openshift']
-openshift_enable_service_catalog=true
-ansible_service_broker_install=true
-template_service_broker_install=true
+openshift_enable_service_catalog=false
+ansible_service_broker_install=false
+template_service_broker_install=false
 openshift_service_catalog_image_version=latest
 ansible_service_broker_image_prefix=registry.access.redhat.com/openshift3/ose-
 ansible_service_broker_registry_url="registry.access.redhat.com"
@@ -782,7 +793,7 @@ openshift_service_catalog_image_prefix=registry.access.redhat.com/openshift3/ose
 template_service_broker_selector={"region":"infra"}
 
 # ** Prometheus **
-openshift_hosted_prometheus_deploy=true
+openshift_hosted_prometheus_deploy=false
 openshift_prometheus_namespace=openshift-metrics
 openshift_prometheus_node_selector={"region":"infra"}
 openshift_prometheus_storage_kind=nfs
@@ -794,12 +805,6 @@ openshift_prometheus_storage_volume_size=20Gi
 openshift_prometheus_storage_labels={'storage':'prometheus'}
 openshift_prometheus_storage_type='pvc'
 
-# GlusterFS
-openshift_storage_glusterfs_wipe=True
-openshift_storage_glusterfs_storageclass=True
-openshift_storage_glusterfs_namespace=glusterfs 
-openshift_storage_glusterfs_name=storage
-
 # host group for masters
 [masters]
 $MASTER-[0:${MASTERLOOP}]
@@ -810,8 +815,6 @@ $MASTER-[0:${MASTERLOOP}]
 $MASTER-0
 [nfs]
 $MASTER-0
-[lb]
-$BASTION
 
 # host group for nodes
 [nodes]
@@ -838,21 +841,18 @@ do
   echo "$NODE-$c openshift_node_labels=\"{'region': 'app', 'zone': 'default'}\" openshift_hostname=$NODE-$c" >> /etc/ansible/hosts
 done
 
-# glusterfs CNS installation
+# Loop to add CNS Nodes
+
+for (( c=0; c<$CNSCOUNT; c++ ))
+do
+  echo "$CNS-$c openshift_schedulable=True  openshift_hostname=$CNS-$c" >> /etc/ansible/hosts
+done
+
+# glusterfs
 echo "[glusterfs]" >>/etc/ansible/hosts
-for (( c=0; c<$MASTERCOUNT; c++ ))
+for (( c=0; c<$CNSCOUNT; c++ ))
 do
-  echo "$MASTER-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
-
-for (( c=0; c<$INFRACOUNT; c++ ))
-do
-  echo "$INFRA-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
-done
-
-for (( c=0; c<$NODECOUNT; c++ ))
-do
-  echo "$NODE-$c  " >> /etc/ansible/hosts
+  echo "$CNS-$c glusterfs_devices='[ \"/dev/sde\", \"/dev/sdd\", \"/dev/sdf\" ]' " >> /etc/ansible/hosts
 done
 
 # Create new_nodes group
@@ -881,11 +881,27 @@ sleep 5
 runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
 runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
 
-# check issue https://access.redhat.com/solutions/3376031 
-echo $(date) " - downgrade docker-client on all nodes"
-runuser -l $SUDOUSER -c "ansible all -m shell -a \"yum -y downgrade docker-client-1.12.6 docker-common-1.12.6 docker-rhel-push-plugin-1.12.6 docker-1.12.6\""
-runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=docker state=restarted\""
-runuser -l $SUDOUSER -c "ansible-playbook ~/docker_1.13_fix_playbook.yml"
+
+
+# EmptyDir Storage (section 2.11.7)
+echo $(date) " - EmptyDir Storage (section 2.11.7)"
+runuser -l $SUDOUSER -c "ansible nodes -b -m filesystem -a \"fstype=xfs dev=/dev/sdc\""
+runuser -l $SUDOUSER -c "ansible nodes -b -m file -a \"path=/var/lib/origin/openshift.local.volumes state=directory mode=0755\""
+runuser -l $SUDOUSER -c "ansible nodes -b -m mount -a \"path=/var/lib/origin/openshift.local.volumes src=/dev/sdc state=present fstype=xfs opts=gquota\""
+runuser -l $SUDOUSER -c "ansible nodes -b -m shell -a \"restorecon -R /var/lib/origin/openshift.local.volumes\""
+runuser -l $SUDOUSER -c "ansible nodes -b -m mount -a \"path=/var/lib/origin/openshift.local.volumes src=/dev/sdc state=mounted fstype=xfs opts=gquota\""
+
+# etcd storage
+echo $(date) " - etcd Storage"
+runuser -l $SUDOUSER -c "ansible masters -b -m filesystem -a \"fstype=xfs dev=/dev/sde\""
+runuser -l $SUDOUSER -c "ansible masters -b -m file -a \"path=/var/lib/etcd state=directory mode=0755\""
+runuser -l $SUDOUSER -c "ansible masters -b -m mount -a \"path=/var/lib/etcd src=/dev/sde state=present  fstype=xfs\""
+runuser -l $SUDOUSER -c "ansible  masters -b -m shell -a \"restorecon -R  /var/lib/etcd\""
+runuser -l $SUDOUSER -c "ansible masters -b -m mount -a \"path=/var/lib/etcd  src=/dev/sde state=mounted fstype=xfs\""
+
+# Container Storage
+echo $(date) " Container Storage"
+runuser -l $SUDOUSER -c "ansible-playbook -e 'container_runtime_docker_storage_setup_device=/dev/sdd'  -e 'container_runtime_docker_storage_type=overlay2' /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
 
 
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
@@ -966,5 +982,5 @@ echo $(date) "- Configuring OpenShift Cloud Provider to be Azure"
 runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-master.yml"
 runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-node-master.yml"
 runuser -l $SUDOUSER -c "ansible-playbook ~/setup-azure-node.yml"
-runuser -l $SUDOUSER -c "ansible-playbook ~/deletestucknodes.yml"
+# runuser -l $SUDOUSER -c "ansible-playbook ~/deletestucknodes.yml"
 echo $(date) " - Script complete"

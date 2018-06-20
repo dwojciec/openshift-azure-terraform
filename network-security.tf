@@ -9,7 +9,7 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   security_rule {
     name                       = "allow_SSH_in_all"
     description                = "Allow SSH in from all locations"
-    priority                   = 100
+    priority                   = 500
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -18,6 +18,9 @@ resource "azurerm_network_security_group" "bastion_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  tags {
+       environment = "${var.environment}"
+}
 }
 
 # ****** MASTER
@@ -28,22 +31,34 @@ resource "azurerm_network_security_group" "master_nsg" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   security_rule {
-    name                       = "allow_SSH_in_all"
-    description                = "Allow SSH in from all locations"
-    priority                   = 100
+    name                       = "master-ssh"
+    description                = "SSH from the bastion"
+    priority                   = 500
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow_HTTPS_all"
-    description                = "Allow HTTPS connections from all locations"
-    priority                   = 200
+    name                       = "master-etcd"
+    description                = "ETCD service ports"
+    priority                   = 525
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "2379 2380"
+    source_address_prefix      = "VirtualNetwork
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "master-api"
+    description                = "API port - Allow HTTPS connections from all locations"
+    priority                   = 550
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -52,32 +67,71 @@ resource "azurerm_network_security_group" "master_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-
   security_rule {
-    name                       = "allow_OpenShift_console_in_all"
-    description                = "Allow OpenShift Console connections from all locations"
-    priority                   = 300
+    name                       = "master-api-lb"
+    description                = "API port - LoadBalancer"
+    priority                   = 575
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "8443"
-    source_address_prefix      = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allowCockpitIn_all"
-    description                = "Allow Cockpit connections from all locations"
-    priority                   = 400
+    name                       = "master-ocp-tcp"
+    description                = "TCP DNS and fluentd"
+    priority                   = 600
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "9090"
-    source_address_prefix      = "*"
+    destination_port_range     = "8053 24224"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "master-ocp-udp"
+    description                = "UDP DNS and fluentd"
+    priority                   = 625
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "8053 24224"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "node-kubelet"
+    description                = "kubelet"
+    priority                   = 650
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "10250"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "node-sdn"
+    description                = "Openshift sdn"
+    priority                   = 675
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "4789"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "*"
+  }
+ tags {
+       environment = "${var.environment}"
+       sg = master_security_group
+}
 }
 # ****** INFRA
 resource "azurerm_network_security_group" "infra_nsg" {
@@ -86,58 +140,87 @@ resource "azurerm_network_security_group" "infra_nsg" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   security_rule {
-    name                       = "allow_SSH_in_all"
-    description                = "Allow SSH in from all locations"
-    priority                   = 100
+    name                       = "infra-ssh"
+    description                = "ssh from the bastion" 
+    priority                   = 500
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow_HTTPS_all"
-    description                = "Allow HTTPS connections from all locations"
-    priority                   = 200
+    name                       = "router-ports"
+    description                = "Openshift router"
+    priority                   = 525
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
+    destination_port_range     = "80 443"
+    source_address_prefix      = "AzureLoadBalancer"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow_HTTP_in_all"
-    description                = "Allow HTTP connections from all locations"
-    priority                   = 300
+    name                       = "infra-ports"
+    description                = "Elasticsearch"
+    priority                   = 550
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
+    destination_port_range     = "9200 9300"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allowCockpitIn_all"
-    description                = "Allow Cockpit connections from all locations"
-    priority                   = 400
+    name                       = "node-kubelet"
+    description                = "kubelet"
+    priority                   = 575
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "9090"
-    source_address_prefix      = "*"
+    destination_port_range     = "10250"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "node-sdn"
+    description                = "Openshift sdn"
+    priority                   = 600
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "4789"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "router-ports-2"
+    description                = "Openshift router 2"
+    priority                   = 625
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80 443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+
 }
-
+ tags {
+       environment = "${var.environment}"
+       sg = infra_security_group
+}
+}
 # ****** NODE
 resource "azurerm_network_security_group" "node_nsg" {
   name                = "${var.openshift_cluster_prefix}-node-nsg"
@@ -145,55 +228,45 @@ resource "azurerm_network_security_group" "node_nsg" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   security_rule {
-    name                       = "allow_SSH_in_all"
-    description                = "Allow SSH in from all locations"
-    priority                   = 100
+    name                       = "node-ssh"
+    description                = "SSH from the bastion"
+    priority                   = 500
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow_HTTPS_all"
-    description                = "Allow HTTPS connections from all locations"
-    priority                   = 200
+    name                       = "node-kubelet"
+    description                = "kubelet"
+    priority                   = 525
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
+    destination_port_range     = "10250"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow_HTTP_in_all"
-    description                = "Allow HTTP connections from all locations"
-    priority                   = 300
+    name                       = "node-sdn"
+    description                = "ElasticSearch and ocp apps"
+    priority                   = 550
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Tcp"
+    protocol                   = "Udp"
     source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
+    destination_port_range     = "4789"
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
-
-  security_rule {
-    name                       = "allowCockpitIn_all"
-    description                = "Allow Cockpit connections from all locations"
-    priority                   = 400
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "9090"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
+ tags {
+       environment = "${var.environment}"
+       sg = node_security_group
+}
 }

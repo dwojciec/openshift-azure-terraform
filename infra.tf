@@ -24,8 +24,7 @@ resource "azurerm_virtual_machine" "infra" {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
-
-  provisioner "file" {
+ provisioner "file" {
     source      = "${var.openshift_script_path}/nodePrep.sh"
     destination = "nodePrep.sh"
   }
@@ -36,7 +35,6 @@ resource "azurerm_virtual_machine" "infra" {
       "sudo bash nodePrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\""
     ]
   }
-
   os_profile {
     computer_name  = "${var.openshift_cluster_prefix}-infra-${count.index}"
     admin_username = "${var.admin_username}"
@@ -64,6 +62,7 @@ resource "azurerm_virtual_machine" "infra" {
     vhd_uri       = "${azurerm_storage_account.infra_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-osdisk${count.index}.vhd"
     caching       = "ReadWrite"
     create_option = "FromImage"
+    disk_size_gb  = 32
   }
 
   storage_data_disk {
@@ -72,26 +71,5 @@ resource "azurerm_virtual_machine" "infra" {
     disk_size_gb  = "${var.data_disk_size}"
     create_option = "Empty"
     lun           = 0
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-infra-glusterfs-pool1${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-glusterfs-pool1${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 1
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-infra-glusterfs-pool2${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-glusterfs-pool2${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 2
-  }
-storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-infra-glusterfs-pool3${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-glusterfs-pool3${count.index}.vhd"
-    disk_size_gb  = 20
-    create_option = "Empty"
-    lun           = 3
   }
 }

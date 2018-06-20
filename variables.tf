@@ -4,11 +4,17 @@ variable "ssh_public_key" {
 
 variable "resource_group_name" {
   description = "Name of the azure resource group in which you will deploy this template."
+  default = "openshift"
 }
 
 variable "resource_group_location" {
   description = "Location of the azure resource group."
   default     = "WestEurope"
+}
+
+variable "storage_account_name" {
+   description = "Microsoft Azure blob storage is used to allow for the storing of container images"
+   default     = "openshiftregistry"
 }
 
 variable "subscription_id" {
@@ -42,22 +48,26 @@ variable "os_image" {
 
 variable "bastion_vm_size" {
   description = "Size of the Bastion Virtual Machine. Allowed values: Standard_A4, Standard_A5, Standard_A6, Standard_A7, Standard_A8, Standard_A9, Standard_A10, Standard_A11, Standard_D1, Standard_D2, Standard_D3, Standard_D4, Standard_D11, Standard_D12, Standard_D13, Standard_D14, Standard_D1_v2, Standard_D2_v2, Standard_D3_v2, Standard_D4_v2, Standard_D5_v2, Standard_D11_v2, Standard_D12_v2, Standard_D13_v2, Standard_D14_v2, Standard_G1, Standard_G2, Standard_G3, Standard_G4, Standard_G5, Standard_D1_v2, Standard_DS2, Standard_DS3, Standard_DS4, Standard_DS11, Standard_DS12, Standard_DS13, Standard_DS14, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Standard_DS4_v2, Standard_DS5_v2, Standard_DS11_v2, Standard_DS12_v2, Standard_DS13_v2, Standard_DS14_v2, Standard_GS1, Standard_GS2, Standard_GS3, Standard_GS4, Standard_GS5"
-  default     = "Standard_D2_v2"
+  default     = "Standard_D1"
 }
 
 variable "master_vm_size" {
   description = "Size of the Master Virtual Machine. Allowed values: Standard_A4, Standard_A5, Standard_A6, Standard_A7, Standard_A8, Standard_A9, Standard_A10, Standard_A11, Standard_D1, Standard_D2, Standard_D3, Standard_D4, Standard_D11, Standard_D12, Standard_D13, Standard_D14, Standard_D1_v2, Standard_D2_v2, Standard_D3_v2, Standard_D4_v2, Standard_D5_v2, Standard_D11_v2, Standard_D12_v2, Standard_D13_v2, Standard_D14_v2, Standard_G1, Standard_G2, Standard_G3, Standard_G4, Standard_G5, Standard_D1_v2, Standard_DS2, Standard_DS3, Standard_DS4, Standard_DS11, Standard_DS12, Standard_DS13, Standard_DS14, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Standard_DS4_v2, Standard_DS5_v2, Standard_DS11_v2, Standard_DS12_v2, Standard_DS13_v2, Standard_DS14_v2, Standard_GS1, Standard_GS2, Standard_GS3, Standard_GS4, Standard_GS5"
-  default     = "Standard_DS11_v2_Promo"
+  default     = "Standard_D4s_v3"
 }
 
 variable "infra_vm_size" {
   description = "Size of the Infra Virtual Machine. Allowed values: Standard_A4, Standard_A5, Standard_A6, Standard_A7, Standard_A8, Standard_A9, Standard_A10, Standard_A11,Standard_D1, Standard_D2, Standard_D3, Standard_D4,Standard_D11, Standard_D12, Standard_D13, Standard_D14,Standard_D1_v2, Standard_D2_v2, Standard_D3_v2, Standard_D4_v2, Standard_D5_v2,Standard_D11_v2, Standard_D12_v2, Standard_D13_v2, Standard_D14_v2,Standard_G1, Standard_G2, Standard_G3, Standard_G4, Standard_G5,Standard_D1_v2, Standard_DS2, Standard_DS3, Standard_DS4,Standard_DS11, Standard_DS12, Standard_DS13, Standard_DS14,Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Standard_DS4_v2, Standard_DS5_v2,Standard_DS11_v2, Standard_DS12_v2, Standard_DS13_v2, Standard_DS14_v2,Standard_GS1, Standard_GS2, Standard_GS3, Standard_GS4, Standard_GS5"
-  default     = "Standard_DS11_v2_Promo"
+  default     = "Standard_D4s_v3"
 }
 
 variable "node_vm_size" {
   description = "Size of the Node Virtual Machine. Allowed values: Standard_A4, Standard_A5, Standard_A6, Standard_A7, Standard_A8, Standard_A9, Standard_A10, Standard_A11, Standard_D1, Standard_D2, Standard_D3, Standard_D4, Standard_D11, Standard_D12, Standard_D13, Standard_D14, Standard_D1_v2, Standard_D2_v2, Standard_D3_v2, Standard_D4_v2, Standard_D5_v2, Standard_D11_v2, Standard_D12_v2, Standard_D13_v2, Standard_D14_v2, Standard_G1, Standard_G2, Standard_G3, Standard_G4, Standard_G5, Standard_D1_v2, Standard_DS2, Standard_DS3, Standard_DS4, Standard_DS11, Standard_DS12, Standard_DS13, Standard_DS14, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Standard_DS4_v2, Standard_DS5_v2, Standard_DS11_v2, Standard_DS12_v2, Standard_DS13_v2, Standard_DS14_v2, Standard_GS1, Standard_GS2, Standard_GS3, Standard_GS4, Standard_GS5"
-  default     = "Standard_DS11_v2_Promo"
+  default     = "Standard_D4s_v3"
+}
+variable "cns_vm_size" {
+  description = "Size of the Node Virtual Machine. Allowed values: Standard_A4, Standard_A5, Standard_A6, Standard_A7, Standard_A8, Standard_A9, Standard_A10, Standard_A11, Standard_D1, Standard_D2, Standard_D3, Standard_D4, Standard_D11, Standard_D12, Standard_D13, Standard_D14, Standard_D1_v2, Standard_D2_v2, Standard_D3_v2, Standard_D4_v2, Standard_D5_v2, Standard_D11_v2, Standard_D12_v2, Standard_D13_v2, Standard_D14_v2, Standard_G1, Standard_G2, Standard_G3, Standard_G4, Standard_G5, Standard_D1_v2, Standard_DS2, Standard_DS3, Standard_DS4, Standard_DS11, Standard_DS12, Standard_DS13, Standard_DS14, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Standard_DS4_v2, Standard_DS5_v2, Standard_DS11_v2, Standard_DS12_v2, Standard_DS13_v2, Standard_DS14_v2, Standard_GS1, Standard_GS2, Standard_GS3, Standard_GS4, Standard_GS5"
+  default     = "Standard_D8s_v3"
 }
 
 variable "storage_account_tier" {
@@ -84,7 +94,7 @@ variable "os_image_map" {
 
 variable "disk_size_gb" {
   description = "storage os disk size"
-  default     = 60
+  default     = 32
 }
 
 variable "openshift_cluster_prefix" {
@@ -93,17 +103,21 @@ variable "openshift_cluster_prefix" {
 
 variable "master_instance_count" {
   description = "Number of OpenShift Masters nodes to deploy. 1 is non HA and 3 is for HA."
-  default     = 1
+  default     = 3
 }
 
 variable "infra_instance_count" {
   description = "Number of OpenShift infra nodes to deploy. 1 is non HA.  Choose 2 or 3 for HA."
-  default     = 1
+  default     = 3
 }
 
 variable "node_instance_count" {
   description = "Number of OpenShift nodes to deploy. Allowed values: 1-30"
-  default     = 1
+  default     = 3
+}
+variable "cns_instance_count" {
+  description = "Number of OpenShift CNS nodes to deploy. Allowed values: 1-30"
+  default     = 0
 }
 
 variable "data_disk_size" {
@@ -113,7 +127,7 @@ variable "data_disk_size" {
 
 variable "admin_username" {
   description = "Admin username for both OS login and OpenShift login"
-  default     = "ocpadmin"
+  default     = "cloud-user"
 }
 
 variable "openshift_password" {
@@ -159,3 +173,9 @@ variable "openshift_azure_deploy_openshift_script" {
   description = "URL for Deploy Openshift script"
   default     = "https://raw.githubusercontent.com/dwojciec/openshift-azure-terraform/master/openshift-enterprise/scripts/deployOpenShift.sh"
 }
+
+variable "environment" {
+  description = "type environment Test, UAT, Production"
+  default     = "Test"
+}
+

@@ -7,6 +7,10 @@ openshift_rht_user=""
 openshift_rht_password="" 
 openshift_rht_poolid="" 
 
+storage_account_name="openshiftregistry"
+
+environment="Test"
+
 resource_group_name="ocponazure" 
 resource_group_location="WestEurope"
 key_vault_name="TerraformVault" 
@@ -21,11 +25,13 @@ connection_private_ssh_key_path="/Users/openshift/.ssh/id_rsa"
 ssh_public_key="ssh-rsa AAAAB3m"
 openshift_azure_deploy_openshift_script="https://raw.githubusercontent.com/dwojciec/openshift-azure-terraform/master/openshift-enterprise/scripts/deployOpenShift.sh"
 
-master_instance_count=1 
-infra_instance_count=1 
-node_instance_count=1
+master_instance_count=3 
+infra_instance_count=3 
+node_instance_count=3
+cns_instance_count=3
 
-infra_vm_size="Standard_DS11_v2_Promo"
-node_vm_size="Standard_DS11_v2_Promo"
-master_vm_size="Standard_DS11_v2_Promo"
-bastion_vm_size="Standard_D2_v2"
+infra_vm_size="Standard_D4s_v3"
+node_vm_size="Standard_D4s_v3"
+master_vm_size="Standard_D4s_v3"
+bastion_vm_size="Standard_D1"
+cns_vm_size="Standard_D4s_v3"
