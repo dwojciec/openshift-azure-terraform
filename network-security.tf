@@ -51,7 +51,7 @@ resource "azurerm_network_security_group" "master_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "2379 2380"
+    destination_port_range     = "2379-2380"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
@@ -88,7 +88,7 @@ resource "azurerm_network_security_group" "master_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "8053 24224"
+    destination_port_range     = "8053-24224"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
@@ -100,7 +100,7 @@ resource "azurerm_network_security_group" "master_nsg" {
     access                     = "Allow"
     protocol                   = "Udp"
     source_port_range          = "*"
-    destination_port_range     = "8053 24224"
+    destination_port_range     = "8053-24224"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
@@ -160,7 +160,7 @@ resource "azurerm_network_security_group" "infra_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "80 443"
+    destination_port_range     = "80-443"
     source_address_prefix      = "AzureLoadBalancer"
     destination_address_prefix = "*"
   }
@@ -173,7 +173,7 @@ resource "azurerm_network_security_group" "infra_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "9200 9300"
+    destination_port_range     = "9200-9300"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
@@ -211,7 +211,7 @@ resource "azurerm_network_security_group" "infra_nsg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "80 443"
+    destination_port_range     = "80-443"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
 

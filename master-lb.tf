@@ -63,7 +63,7 @@ resource "azurerm_lb_rule" "master_cockpit_lb" {
   protocol                       = "Tcp"
   frontend_port                  = 9090
   backend_port                   = 9090
-  frontend_ip_configuration_name = "LoadBalancerFrontEnd"
+  frontend_ip_configuration_name = "masterApiFrontend"
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.master_lb.id}"
   load_distribution              = "SourceIP"
   idle_timeout_in_minutes        = 30
@@ -78,7 +78,7 @@ resource "azurerm_lb_nat_rule" "master_lb" {
   protocol                       = "Tcp"
   frontend_port                  = "${count.index + 2200}"
   backend_port                   = 22
-  frontend_ip_configuration_name = "LoadBalancerFrontEnd"
+  frontend_ip_configuration_name = "masterApiFrontend"
   count                          = "${var.master_instance_count}"
   depends_on                     = ["azurerm_lb.master_lb"]
 }

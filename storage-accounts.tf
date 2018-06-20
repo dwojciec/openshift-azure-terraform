@@ -56,14 +56,6 @@ resource "azurerm_storage_account" "registry_storage_account" {
   account_replication_type = "${var.storage_account_replication_type}"
 }
 
-data "azurerm_storage_account" "registry_storage_account" {
-  name                 = "${var.storage_account_name}"
-  resource_group_name  = "${azurerm_resource_group.rg.name}"
-}
-output "azurekey-registry" {
-  value = "${data.azurerm_storage_account.registry_storage_account.primary_access_key}"
-}
-
 resource "azurerm_storage_account" "persistent_volume_storage_account" {
   name                     = "${var.openshift_cluster_prefix}pvsa"
   resource_group_name      = "${azurerm_resource_group.rg.name}"
