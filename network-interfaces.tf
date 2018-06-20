@@ -58,3 +58,17 @@ resource "azurerm_network_interface" "node_nic" {
     private_ip_address_allocation = "Dynamic"
   }
 }
+resource "azurerm_network_interface" "cns_nic" {
+  name                      = "cns_nic${count.index}"
+  location                  = "${azurerm_resource_group.rg.location}"
+  resource_group_name       = "${azurerm_resource_group.rg.name}"
+  network_security_group_id = "${azurerm_network_security_group.cns_nsg.id}"
+  count                     = "${var.cns_instance_count}"
+
+  ip_configuration {
+    name                          = "cnsip${count.index}"
+    subnet_id                     = "${azurerm_subnet.node_subnet.id}"
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+

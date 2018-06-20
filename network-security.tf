@@ -52,7 +52,7 @@ resource "azurerm_network_security_group" "master_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "2379 2380"
-    source_address_prefix      = "VirtualNetwork
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
   security_rule {
@@ -130,7 +130,7 @@ resource "azurerm_network_security_group" "master_nsg" {
   }
  tags {
        environment = "${var.environment}"
-       sg = master_security_group
+       sg = "master_security_group"
 }
 }
 # ****** INFRA
@@ -218,7 +218,7 @@ resource "azurerm_network_security_group" "infra_nsg" {
 }
  tags {
        environment = "${var.environment}"
-       sg = infra_security_group
+       sg = "infra_security_group"
 }
 }
 # ****** NODE
@@ -267,6 +267,6 @@ resource "azurerm_network_security_group" "node_nsg" {
   }
  tags {
        environment = "${var.environment}"
-       sg = node_security_group
+       sg = "node_security_group"
 }
 }

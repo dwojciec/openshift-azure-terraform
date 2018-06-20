@@ -28,7 +28,7 @@ resource "azurerm_network_security_group" "cns_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "10250"
-    source_address_prefix      = "VirtualNetwork
+    source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "*"
   }
   security_rule {
@@ -142,6 +142,6 @@ resource "azurerm_network_security_group" "cns_nsg" {
   }
  tags {
        environment = "${var.environment}"
-       sg = cns_security_group
+       sg = "cns_security_group"
 }
 }

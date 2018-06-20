@@ -57,7 +57,7 @@ resource "azurerm_lb_rule" "infra_lb_http" {
   protocol                       = "Tcp"
   frontend_port                  = 80
   backend_port                   = 80
-  load_distribution              = SourceIPProtocol
+  load_distribution              = "SourceIPProtocol"
   frontend_ip_configuration_name = "routerFrontEnd"
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.infra_lb.id}"
   probe_id                       = "${azurerm_lb_probe.infra_lb_http_probe.id}"
@@ -71,7 +71,7 @@ resource "azurerm_lb_rule" "infra_lb_https" {
   protocol                       = "Tcp"
   frontend_port                  = 443
   backend_port                   = 443
-  load_distribution              = SourceIPProtocol
+  load_distribution              = "SourceIPProtocol"
   frontend_ip_configuration_name = "routerFrontEnd"
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.infra_lb.id}"
   probe_id                       = "${azurerm_lb_probe.infra_lb_https_probe.id}"

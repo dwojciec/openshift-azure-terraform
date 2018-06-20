@@ -32,6 +32,14 @@ resource "azurerm_storage_account" "nodeos_storage_account" {
   account_replication_type = "${var.storage_account_replication_type}"
 }
 
+resource "azurerm_storage_account" "cns_storage_account" {
+  name                     = "${var.openshift_cluster_prefix}cnssa"
+  resource_group_name      = "${azurerm_resource_group.rg.name}"
+  location                 = "${azurerm_resource_group.rg.location}"
+  account_tier             = "${var.storage_account_tier}"
+  account_replication_type = "${var.storage_account_replication_type}"
+}
+
 resource "azurerm_storage_account" "nodedata_storage_account" {
   name                     = "${var.openshift_cluster_prefix}nodedatasa"
   resource_group_name      = "${azurerm_resource_group.rg.name}"
@@ -51,9 +59,7 @@ resource "azurerm_storage_account" "registry_storage_account" {
 data "azurerm_storage_account" "registry_storage_account" {
   name                 = "${var.storage_account_name}"
   resource_group_name  = "${azurerm_resource_group.rg.name}"
-  location             = "${azurerm_resource_group.rg.location}"
 }
-
 output "azurekey-registry" {
   value = "${data.azurerm_storage_account.registry_storage_account.primary_access_key}"
 }
