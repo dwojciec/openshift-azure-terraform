@@ -1,10 +1,11 @@
 
-Deploy OpenShift Enterprise on Azure using Terraform and Ansible
+Deploy OpenShift Enterprise 3.9 on Azure using Terraform and Ansible
 ==================
 .... Still in development...
 
 
-This script allow you to deploy an OpenShift Enterprise v3.7.0 in best practices on Microsoft Azure.
+This script allow you to deploy an OpenShift Enterprise v3.9 in best practices on Microsoft Azure.
+Following this document :[DEPLOYING AND MANAGING OPENSHIFT 3.9 ON AZURE ] (https://access.redhat.com/documentation/en-us/reference_architectures/2018/html-single/deploying_and_managing_openshift_3.9_on_azure/#red_hat_openshift_container_platform_components)
 
 Starting point 
 ---------------
