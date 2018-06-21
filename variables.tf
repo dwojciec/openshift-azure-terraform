@@ -94,7 +94,7 @@ variable "os_image_map" {
 
 variable "disk_size_gb" {
   description = "storage os disk size"
-  default     = 32
+  default     = 64
 }
 
 variable "openshift_cluster_prefix" {

@@ -79,7 +79,6 @@ systemctl start cockpit.socket
 echo $(date) " - Install base packages and update system to latest packages"
 
 yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct httpd-tools
-yum -y update --exclude=WALinuxAgent
 
 # Install OpenShift utilities
 echo $(date) " - Installing OpenShift utilities"
@@ -92,25 +91,6 @@ echo $(date) " - Installing Docker 1.13.1"
 yum -y install  docker-1.13.1
 sed -i -e "s#^OPTIONS='--selinux-enabled'#OPTIONS='--selinux-enabled --insecure-registry 172.30.0.0/16'#" /etc/sysconfig/docker
 
-# Create thin pool logical volume for Docker
-echo $(date) " - Creating thin pool logical volume for Docker and staring service"
-
-#DOCKERVG=$(parted -m /dev/sda print all 2>/dev/null | grep unknown | grep /dev/sd | cut -d':' -f1)
-DOCKERVG=/dev/sdc
-echo "DEVS=${DOCKERVG}" >> /etc/sysconfig/docker-storage-setup
-echo "VG=docker-vg" >> /etc/sysconfig/docker-storage-setup
-echo "WIPE_SIGNATURES=true" >> /etc/sysconfig/docker-storage-setup
-echo "STORAGE_DRIVER=overlay2" >> /etc/sysconfig/docker-storage-setup
-echo "CONTAINER_ROOT_LV_NAME=dockerlv" >> /etc/sysconfig/docker-storage-setup
-echo "CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker" >> /etc/sysconfig/docker-storage-setup
-docker-storage-setup
-if [ $? -eq 0 ]
-then
-   echo "Docker thin pool logical volume created successfully"
-else
-   echo "Error creating logical volume for Docker"
-   exit 5
-fi
 
 # Enable and start Docker services
 
@@ -124,24 +104,18 @@ if hostname -f|grep -- "-0" >/dev/null
 then
    echo $(date) " - We are on master-0 ($(hostname)): Setting up NFS server for persistent storage"
    yum -y install nfs-utils
-   VGCALC=$(vgs|grep docker-vg|awk '{ print $7 }'|sed -e 's/.[0-9][0-9]g//' -e 's/<//g')
-   VGFREESPACE=$(echo $VGCALC - 1|bc)
-   lvcreate -n lv_nfs -L+$VGFREESPACE docker-vg
-   mkfs.xfs /dev/mapper/docker--vg-lv_nfs
-   echo "/dev/mapper/docker--vg-lv_nfs /exports xfs defaults 0 0" >>/etc/fstab
+   # echo "/exports xfs defaults 0 0" >>/etc/fstab
    mkdir /exports
-   mount -a
-   if [ "$?" -eq 0 ]
-   then
-      echo "$(date) Successfully setup NFS."
-   else
-      echo "$(date) Failed to mount filesystem which is to host the NFS share."
-      exit 6
-   fi
+   #mount -a
+   #if [ "$?" -eq 0 ]
+   #then
+   #   echo "$(date) Successfully setup NFS."
+   #else
+   #   echo "$(date) Failed to mount filesystem which is to host the NFS share."
+   #   exit 6
+   #fi
    
-   lvextend -l 100%FREE /dev/docker-vg/lv_nfs
-   xfs_growfs /dev/docker-vg/lv_nfs
-   
+
    for item in registry metrics jenkins osev3-etcd
    do 
       mkdir -p /exports/$item

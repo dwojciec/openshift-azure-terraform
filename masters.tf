@@ -17,7 +17,7 @@ resource "azurerm_virtual_machine" "master" {
     environment = "${var.environment}"
   }
 
-connection {
+  connection {
     type                = "ssh"
     bastion_host        = "${azurerm_public_ip.bastion_pip.fqdn}"
     bastion_user        = "${var.admin_username}"
@@ -26,17 +26,17 @@ connection {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
-provisioner "file" {
+
+  provisioner "file" {
     source      = "${var.openshift_script_path}/masterPrep.sh"
     destination = "masterPrep.sh"
   }
-
 
   provisioner "remote-exec" {
     inline = [
       "set -x",
       "chmod +x masterPrep.sh",
-      "sudo bash masterPrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\""
+      "sudo bash masterPrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\"",
     ]
   }
 
@@ -63,18 +63,58 @@ provisioner "file" {
   }
 
   storage_os_disk {
-    name          = "${var.openshift_cluster_prefix}-master-osdisk${count.index}"
-    vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-master-osdisk${count.index}.vhd"
-    caching       = "ReadWrite"
-    create_option = "FromImage"
-    disk_size_gb  = 32
+    name              = "${var.openshift_cluster_prefix}-master-osdisk${count.index}"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+    disk_size_gb      = 32
   }
 
-  storage_data_disk  {
-    name          = "${var.openshift_cluster_prefix}-master-docker-pool${count.index}"
-    vhd_uri       = "${azurerm_storage_account.master_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-master-docker-pool${count.index}.vhd"
-    disk_size_gb  = "${var.data_disk_size}"
-    create_option = "Empty"
-    lun           = 0
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-container-1-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 0
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-container-2-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 1
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-container-3-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 2
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-1-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 3
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-2-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 4
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-3-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 32
+    managed_disk_type = "Standard_LRS"
+    lun               = 5
   }
 }

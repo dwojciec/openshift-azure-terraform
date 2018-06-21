@@ -679,7 +679,6 @@ masters
 nodes
 etcd
 nfs
-lb
 new_nodes
 glusterfs
 master0
@@ -868,20 +867,6 @@ fi
 # Create correct hosts file on all servers
 #runuser -l $SUDOUSER -c "ansible-playbook ~/preinstall.yml"
 # add
-
-echo $(date) " - Running network_manager.yml playbook"
-DOMAIN=`domainname -d`
-# Setup NetworkManager to manage eth0
-runuser -l $SUDOUSER -c "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-node/network_manager.yml"
-
-echo $(date) " - Setting up NetworkManager on eth0"
-# Configure resolv.conf on all hosts through NetworkManager
-runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
-sleep 5
-runuser -l $SUDOUSER -c "ansible all -b -m command -a \"nmcli con modify eth0 ipv4.dns-search $DOMAIN\""
-runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
-
-
 
 # EmptyDir Storage (section 2.11.7)
 echo $(date) " - EmptyDir Storage (section 2.11.7)"

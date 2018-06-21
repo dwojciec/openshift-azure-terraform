@@ -1,7 +1,7 @@
 # ******* Node VMs *******
 
 resource "azurerm_virtual_machine" "node" {
-  name                             = "${var.openshift_cluster_prefix}-node-${count.index}"
+  name                             = "${var.openshift_cluster_prefix}-app-${count.index}"
   location                         = "${azurerm_resource_group.rg.location}"
   resource_group_name              = "${azurerm_resource_group.rg.name}"
   availability_set_id              = "${azurerm_availability_set.node.id}"
@@ -38,7 +38,7 @@ provisioner "file" {
   }
 
   os_profile {
-    computer_name  = "${var.openshift_cluster_prefix}-node-${count.index}"
+    computer_name  = "${var.openshift_cluster_prefix}-app-${count.index}"
     admin_username = "${var.admin_username}"
     admin_password = "${var.openshift_password}"
   }
@@ -60,18 +60,33 @@ provisioner "file" {
   }
 
   storage_os_disk {
-    name          = "${var.openshift_cluster_prefix}-node-osdisk"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-osdisk${count.index}.vhd"
+    name          = "${var.openshift_cluster_prefix}-app-osdisk"
+    managed_disk_type = "Standard_LRS"
     caching       = "ReadWrite"
     create_option = "FromImage"
-    disk_size_gb  = 32
+    disk_size_gb  = 64
+  }
+storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-app-container-1-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 0
   }
 
   storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-node-docker-pool${count.index}"
-    vhd_uri       = "${azurerm_storage_account.nodeos_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-node-docker-pool${count.index}.vhd"
-    disk_size_gb  = "${var.data_disk_size}"
-    create_option = "Empty"
-    lun           = 0
+    name              = "${var.openshift_cluster_prefix}-ocp-app-container-2-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 1
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-app-container-3-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 2
   }
 }

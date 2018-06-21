@@ -13,7 +13,7 @@ resource "azurerm_virtual_machine" "infra" {
 
   tags {
     displayName = "${var.openshift_cluster_prefix}-infra VM Creation"
-     environment = "${var.environment}"
+    environment = "${var.environment}"
   }
 
   connection {
@@ -25,7 +25,8 @@ resource "azurerm_virtual_machine" "infra" {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
- provisioner "file" {
+
+  provisioner "file" {
     source      = "${var.openshift_script_path}/nodePrep.sh"
     destination = "nodePrep.sh"
   }
@@ -33,9 +34,10 @@ resource "azurerm_virtual_machine" "infra" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x nodePrep.sh",
-      "sudo bash nodePrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\""
+      "sudo bash nodePrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\"",
     ]
   }
+
   os_profile {
     computer_name  = "${var.openshift_cluster_prefix}-infra-${count.index}"
     admin_username = "${var.admin_username}"
@@ -59,18 +61,34 @@ resource "azurerm_virtual_machine" "infra" {
   }
 
   storage_os_disk {
-    name          = "${var.openshift_cluster_prefix}-infra-osdisk${count.index}"
-    vhd_uri       = "${azurerm_storage_account.infra_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-osdisk${count.index}.vhd"
-    caching       = "ReadWrite"
-    create_option = "FromImage"
-    disk_size_gb  = 32
+    name              = "${var.openshift_cluster_prefix}-infra-osdisk${count.index}"
+    managed_disk_type = "Standard_LRS"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    disk_size_gb      = 32
   }
 
   storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-infra-docker-pool"
-    vhd_uri       = "${azurerm_storage_account.infra_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-infra-docker-pool${count.index}.vhd"
-    disk_size_gb  = "${var.data_disk_size}"
-    create_option = "Empty"
-    lun           = 0
+    name              = "${var.openshift_cluster_prefix}-ocp-infra-container-1-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 0
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-infra-container-2-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 1
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-infra-container-3-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 2
   }
 }

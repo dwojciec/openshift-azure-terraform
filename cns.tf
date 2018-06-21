@@ -76,7 +76,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-1"
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-1-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
@@ -84,7 +84,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-2"
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-2-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
@@ -92,7 +92,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-3"
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-3-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
@@ -100,7 +100,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-cns-volume-1"
+    name              = "${var.openshift_cluster_prefix}-cns-volume-1-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 512
     managed_disk_type = "Premium_LRS"
@@ -108,7 +108,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-cns-volume-2"
+    name              = "${var.openshift_cluster_prefix}-cns-volume-2-${count.index}"
     create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
@@ -116,7 +116,7 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-cns-volume-3"
+    name              = "${var.openshift_cluster_prefix}-cns-volume-3-${count.index}"
     create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
