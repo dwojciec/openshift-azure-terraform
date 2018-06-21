@@ -71,13 +71,13 @@ resource "azurerm_virtual_machine" "cns" {
     name              = "${var.openshift_cluster_prefix}-cns-docker-pool${count.index}"
     managed_disk_type = "Standard_LRS"
     disk_size_gb      = "${var.data_disk_size}"
-    create_option     = "Attach"
+    create_option     = "Empty"
     lun               = 0
   }
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-1"
-    create_option     = "Attach"
+    create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
     lun               = 1
@@ -85,7 +85,7 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-2"
-    create_option     = "Attach"
+    create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
     lun               = 2
@@ -93,7 +93,7 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-3"
-    create_option     = "Attach"
+    create_option     = "Empty"
     disk_size_gb      = 64
     managed_disk_type = "Standard_LRS"
     lun               = 3
@@ -101,7 +101,7 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-cns-volume-1"
-    create_option     = "Attach"
+    create_option     = "Empty"
     disk_size_gb      = 512
     managed_disk_type = "Premium_LRS"
     lun               = 4
@@ -109,7 +109,7 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-cns-volume-2"
-    create_option     = "Attach"
+    create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
     lun               = 5
@@ -117,7 +117,7 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-cns-volume-3"
-    create_option     = "Attach"
+    create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
     lun               = 6
