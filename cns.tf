@@ -61,11 +61,11 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_os_disk {
-    name          = "${var.openshift_cluster_prefix}-cns-osdisk${count.index}"
-    vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-cns-osdisk${count.index}.vhd"
-    caching       = "ReadWrite"
-    create_option = "FromImage"
-    disk_size_gb  = 32
+    name              = "${var.openshift_cluster_prefix}-cns-osdisk${count.index}"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+    disk_size_gb      = 32
   }
 
   storage_data_disk {
