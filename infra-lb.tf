@@ -85,7 +85,7 @@ resource "azurerm_lb_rule" "infra_lb_cockpit" {
   protocol                       = "Tcp"
   frontend_port                  = 9090
   backend_port                   = 9090
-  frontend_ip_configuration_name = "LoadBalancerFrontEnd"
+  frontend_ip_configuration_name = "routerFrontEnd"
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.infra_lb.id}"
   probe_id                       = "${azurerm_lb_probe.infra_lb_cockpit_probe.id}"
   depends_on                     = ["azurerm_lb_probe.infra_lb_cockpit_probe", "azurerm_lb_backend_address_pool.infra_lb"]

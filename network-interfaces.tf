@@ -4,7 +4,7 @@ resource "azurerm_network_interface" "bastion_nic" {
   name                      = "bastionnic${count.index}"
   location                  = "${azurerm_resource_group.rg.location}"
   resource_group_name       = "${azurerm_resource_group.rg.name}"
-  network_security_group_id = "${azurerm_network_security_group.master_nsg.id}"
+  network_security_group_id = "${azurerm_network_security_group.bastion_nsg.id}"
 
   ip_configuration {
     name                          = "bastionip${count.index}"
@@ -58,6 +58,7 @@ resource "azurerm_network_interface" "node_nic" {
     private_ip_address_allocation = "Dynamic"
   }
 }
+
 resource "azurerm_network_interface" "cns_nic" {
   name                      = "cns_nic${count.index}"
   location                  = "${azurerm_resource_group.rg.location}"
@@ -71,4 +72,3 @@ resource "azurerm_network_interface" "cns_nic" {
     private_ip_address_allocation = "Dynamic"
   }
 }
-

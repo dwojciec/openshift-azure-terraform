@@ -7,8 +7,8 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   security_rule {
-    name                       = "allow_SSH_in_all"
-    description                = "Allow SSH in from all locations"
+    name                       = "bastion-nsg-ssh"
+    description                = "SSH access from Internet"
     priority                   = 500
     direction                  = "Inbound"
     access                     = "Allow"

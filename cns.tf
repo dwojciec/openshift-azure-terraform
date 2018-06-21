@@ -16,7 +16,7 @@ resource "azurerm_virtual_machine" "cns" {
     environment = "${var.environment}"
   }
 
-connection {
+  connection {
     type                = "ssh"
     bastion_host        = "${azurerm_public_ip.bastion_pip.fqdn}"
     bastion_user        = "${var.admin_username}"
@@ -25,7 +25,8 @@ connection {
     user                = "${var.admin_username}"
     private_key         = "${file(var.connection_private_ssh_key_path)}"
   }
- provisioner "file" {
+
+  provisioner "file" {
     source      = "${var.openshift_script_path}/nodePrep.sh"
     destination = "nodePrep.sh"
   }
@@ -33,7 +34,7 @@ connection {
   provisioner "remote-exec" {
     inline = [
       "chmod +x nodePrep.sh",
-      "sudo bash nodePrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\""
+      "sudo bash nodePrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\"",
     ]
   }
 
@@ -67,33 +68,59 @@ connection {
     disk_size_gb  = 32
   }
 
-  storage_data_disk  {
+  storage_data_disk {
     name          = "${var.openshift_cluster_prefix}-cns-docker-pool${count.index}"
     vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-cns-docker-pool${count.index}.vhd"
     disk_size_gb  = "${var.data_disk_size}"
     create_option = "Empty"
     lun           = 0
   }
- 
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool1${count.index}"
-    create_option = "Empty"
-    disk_size_gb  = 512
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-1"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 1
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-2"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 2
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-cns-container-3"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Standard_LRS"
+    lun               = 3
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-cns-volume-1"
+    create_option     = "Empty"
+    disk_size_gb      = 512
     managed_disk_type = "Premium_LRS"
-    lun           = 1
- }
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool2${count.index}"
-    create_option = "Empty"
+    lun               = 4
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-cns-volume-2"
+    create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
-    disk_size_gb  = 512
-    lun           = 2
- }
- storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-glusterfs-pool3${count.index}"
-    create_option = "Empty"
+    disk_size_gb      = 512
+    lun               = 5
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-cns-volume-3"
+    create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
-    disk_size_gb  = 512
-    lun           = 3
- } 
+    disk_size_gb      = 512
+    lun               = 6
+  }
 }
