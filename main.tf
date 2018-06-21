@@ -10,9 +10,6 @@ resource "azurerm_resource_group" "rg" {
   location = "${var.resource_group_location}"
 }
 
-
-
-
 # ******* AVAILABILITY SETS ***********
 
 resource "azurerm_availability_set" "master" {
@@ -32,10 +29,12 @@ resource "azurerm_availability_set" "node" {
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
 }
+
 resource "azurerm_availability_set" "cns" {
   name                = "ocp-cns-instances"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
+  managed             = true
 }
 
 # ******* IP ADDRESSES ***********
@@ -63,15 +62,3 @@ resource "azurerm_public_ip" "infra_lb_pip" {
   public_ip_address_allocation = "Static"
   domain_name_label            = "${var.openshift_cluster_prefix}infrapip"
 }
-
-
-
-
-
-
-
-
-
-
-
-
