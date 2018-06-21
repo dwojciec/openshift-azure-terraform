@@ -69,11 +69,11 @@ resource "azurerm_virtual_machine" "cns" {
   }
 
   storage_data_disk {
-    name          = "${var.openshift_cluster_prefix}-cns-docker-pool${count.index}"
-    vhd_uri       = "${azurerm_storage_account.cns_storage_account.primary_blob_endpoint}vhds/${var.openshift_cluster_prefix}-cns-docker-pool${count.index}.vhd"
-    disk_size_gb  = "${var.data_disk_size}"
-    create_option = "Empty"
-    lun           = 0
+    name              = "${var.openshift_cluster_prefix}-cns-docker-pool${count.index}"
+    managed_disk_type = "Standard_LRS"
+    disk_size_gb      = "${var.data_disk_size}"
+    create_option     = "Empty"
+    lun               = 0
   }
 
   storage_data_disk {

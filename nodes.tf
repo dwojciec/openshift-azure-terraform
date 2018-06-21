@@ -13,6 +13,7 @@ resource "azurerm_virtual_machine" "node" {
 
   tags {
     displayName = "${var.openshift_cluster_prefix}-node VM Creation"
+     environment = "${var.environment}"
   }
 
   connection {

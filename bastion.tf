@@ -11,26 +11,26 @@ resource "azurerm_virtual_machine" "bastion" {
 
   tags {
     displayName = "${var.openshift_cluster_prefix}-bastion VM Creation"
+    environment = "${var.environment}"
   }
 
- connection {
-     type                = "ssh"
-    host                 = "${azurerm_public_ip.bastion_pip.fqdn}"
-    user                 = "${var.admin_username}"
-    port                 = "22"
-    private_key  = "${file(var.connection_private_ssh_key_path)}"
+  connection {
+    type        = "ssh"
+    host        = "${azurerm_public_ip.bastion_pip.fqdn}"
+    user        = "${var.admin_username}"
+    port        = "22"
+    private_key = "${file(var.connection_private_ssh_key_path)}"
   }
 
-provisioner "file" {
+  provisioner "file" {
     source      = "${var.openshift_script_path}/bastionPrep.sh"
     destination = "bastionPrep.sh"
   }
 
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x bastionPrep.sh",
-      "sudo bash bastionPrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\""
+      "sudo bash bastionPrep.sh \"${var.openshift_rht_user}\" \"${var.openshift_rht_password}\" \"${var.openshift_rht_poolid}\"",
     ]
   }
 
@@ -66,27 +66,28 @@ provisioner "file" {
 }
 
 resource "azurerm_virtual_machine_extension" "deploy_open_shift_bastion" {
-  name                        = "bastionOpShExt"
-   location                   = "${azurerm_resource_group.rg.location}"
-   resource_group_name        = "${azurerm_resource_group.rg.name}"
-   virtual_machine_name       = "${var.openshift_cluster_prefix}-bastion-0"
-   publisher                  = "Microsoft.Azure.Extensions"
-   type                       = "CustomScript"
-   type_handler_version       = "2.0"
-   auto_upgrade_minor_version = true
-   depends_on                 = ["azurerm_virtual_machine.infra", "azurerm_virtual_machine.node" , "azurerm_virtual_machine.master" , "azurerm_virtual_machine.cns"]
+  name                       = "bastionOpShExt"
+  location                   = "${azurerm_resource_group.rg.location}"
+  resource_group_name        = "${azurerm_resource_group.rg.name}"
+  virtual_machine_name       = "${var.openshift_cluster_prefix}-bastion-0"
+  publisher                  = "Microsoft.Azure.Extensions"
+  type                       = "CustomScript"
+  type_handler_version       = "2.0"
+  auto_upgrade_minor_version = true
+  depends_on                 = ["azurerm_virtual_machine.infra", "azurerm_virtual_machine.node", "azurerm_virtual_machine.master", "azurerm_virtual_machine.cns"]
 
-   settings = <<SETTINGS
+  settings = <<SETTINGS
  {
    "fileUris": [
      "${var.openshift_azure_deploy_openshift_script}"
  	]
  }
 SETTINGS
-#
-   protected_settings = <<SETTINGS
+
+  #
+  protected_settings = <<SETTINGS
   {
     "commandToExecute": "bash deployOpenShift.sh ${var.admin_username} ${var.openshift_password} ${base64encode(file(var.connection_private_ssh_key_path))} ${var.openshift_cluster_prefix}-master ${azurerm_public_ip.openshift_master_pip.fqdn} ${azurerm_public_ip.openshift_master_pip.ip_address} ${var.openshift_cluster_prefix}-infra ${var.openshift_cluster_prefix}-node ${var.node_instance_count} ${var.infra_instance_count} ${var.master_instance_count} ${azurerm_public_ip.infra_lb_pip.ip_address}.${var.default_sub_domain_type} ${var.openshift_cluster_prefix} ${azurerm_storage_account.registry_storage_account.name} ${azurerm_storage_account.registry_storage_account.primary_access_key} ${var.tenant_id} ${var.subscription_id} ${var.aad_client_id} ${var.aad_client_secret} ${azurerm_resource_group.rg.name} ${azurerm_resource_group.rg.location} ${var.cns_instance_count} ${var.openshift_cluster_prefix}-cns ${azurerm_storage_account.registry_storage_account.primary_access_key} ${var.key_vault_name} "
   }
  SETTINGS
- }
+}

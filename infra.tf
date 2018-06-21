@@ -13,6 +13,7 @@ resource "azurerm_virtual_machine" "infra" {
 
   tags {
     displayName = "${var.openshift_cluster_prefix}-infra VM Creation"
+     environment = "${var.environment}"
   }
 
   connection {
