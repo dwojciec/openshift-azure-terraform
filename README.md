@@ -73,7 +73,7 @@ The cluster will use self-signed certificates. Accept the warning and proceed to
 To restart and cleanup the Azure assets run the following commands from the <repo> directory
 
 ```bash
-$ az group delete <yourResourceGroup>
+$ az group delete --name <yourResourceGroup>
 info:    Executing command group delete
 Delete resource group <yourResourceGroup>? [y/n] y
 + Deleting resource group <yourResourceGroup>
@@ -95,3 +95,10 @@ $ terraform apply "out.tfplan"
 
 During the OCP installation you can check from the bastion host the content of /var/lib/waagent/custom-script/download/0 directory and the 2 files stdout and stderr.
 
+### To Debug 
+
+Setup this 2 variables :
+```
+$ export TF_LOG_PATH= <filename.log>
+$ export TF_LOG=DEBUG
+```
