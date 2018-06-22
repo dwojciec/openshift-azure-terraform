@@ -557,12 +557,6 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 
 # Setup metrics
 openshift_metrics_install_metrics=false
-openshift_metrics_storage_kind=nfs
-openshift_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_metrics_storage_host=$MASTER-0
-openshift_metrics_storage_nfs_directory=/data
-openshift_metrics_storage_volume_name=metrics
-openshift_metrics_storage_volume_size=10Gi
 openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
 openshift_metrics_install_hawkular_agent=true
 openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/metrics
@@ -570,27 +564,11 @@ openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/m
 
 # Setup logging
 openshift_logging_install_logging=false
-openshift_logging_storage_kind=nfs
-openshift_logging_storage_access_modes=['ReadWriteOnce']
-openshift_logging_storage_host=$MASTER-0.$DOMAIN
-openshift_logging_storage_nfs_directory=/exports
-openshift_logging_storage_nfs_options='*(rw,root_squash)'
-openshift_logging_storage_volume_name=logging
-openshift_logging_storage_volume_size=10Gi
-openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 
 # Setup storage for etcd2, for the new Service Broker
-openshift_hosted_etcd_storage_kind=nfs
-openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_host=$MASTER-0
-openshift_hosted_etcd_storage_nfs_directory=/exports
-openshift_hosted_etcd_storage_volume_name=etcd-vol2 
-openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
-openshift_hosted_etcd_storage_volume_size=1G
-openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 
 openshift_template_service_broker_namespaces=['openshift']
 openshift_enable_service_catalog=false
@@ -607,14 +585,6 @@ template_service_broker_selector={"region":"infra"}
 openshift_hosted_prometheus_deploy=false
 openshift_prometheus_namespace=openshift-metrics
 openshift_prometheus_node_selector={"region":"infra"}
-openshift_prometheus_storage_kind=nfs
-openshift_prometheus_storage_access_modes=['ReadWriteOnce']
-openshift_prometheus_storage_host=$MASTER-0.$DOMAIN
-openshift_prometheus_storage_nfs_directory=/data
-openshift_prometheus_storage_volume_name=prometheus
-openshift_prometheus_storage_volume_size=20Gi
-openshift_prometheus_storage_labels={'storage':'prometheus'}
-openshift_prometheus_storage_type='pvc'
 
 # host group for masters
 [masters]
@@ -746,40 +716,18 @@ openshift_hosted_registry_storage_azure_blob_realm=core.windows.net
 
 
 openshift_metrics_install_metrics=false
-openshift_metrics_storage_kind=nfs
-openshift_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_metrics_storage_host=$MASTER-0
-openshift_metrics_storage_nfs_directory=/data
-openshift_metrics_storage_volume_name=metrics
-openshift_metrics_storage_volume_size=10Gi
 openshift_metrics_hawkular_hostname=hawkular-metrics.$ROUTING
 openshift_metrics_install_hawkular_agent=true
 openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/metrics
 
 # Setup logging
 openshift_logging_install_logging=false
-openshift_logging_storage_kind=nfs
-openshift_logging_storage_access_modes=['ReadWriteOnce']
-openshift_logging_storage_host=$MASTER-0.$DOMAIN
-openshift_logging_storage_nfs_directory=/exports
-openshift_logging_storage_nfs_options='*(rw,root_squash)'
-openshift_logging_storage_volume_name=logging
-openshift_logging_storage_volume_size=10Gi
-openshift_logging_storage_labels={'storage': 'logging'}
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
 
 
 # Setup storage for etcd2, for the new Service Broker
-openshift_hosted_etcd_storage_kind=nfs
-openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_host=$MASTER-0
-openshift_hosted_etcd_storage_nfs_directory=/exports
-openshift_hosted_etcd_storage_volume_name=etcd-vol2 
-openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
-openshift_hosted_etcd_storage_volume_size=1G
-openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 ansible_service_broker_local_registry_whitelist=['.*-apb$']
 openshift_template_service_broker_namespaces=['openshift']
 openshift_enable_service_catalog=false
@@ -795,14 +743,6 @@ template_service_broker_selector={"region":"infra"}
 openshift_hosted_prometheus_deploy=false
 openshift_prometheus_namespace=openshift-metrics
 openshift_prometheus_node_selector={"region":"infra"}
-openshift_prometheus_storage_kind=nfs
-openshift_prometheus_storage_access_modes=['ReadWriteOnce']
-openshift_prometheus_storage_host=$MASTER-0.$DOMAIN
-openshift_prometheus_storage_nfs_directory=/data
-openshift_prometheus_storage_volume_name=prometheus
-openshift_prometheus_storage_volume_size=20Gi
-openshift_prometheus_storage_labels={'storage':'prometheus'}
-openshift_prometheus_storage_type='pvc'
 
 # host group for masters
 [masters]
