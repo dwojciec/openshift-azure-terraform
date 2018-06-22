@@ -892,7 +892,7 @@ runuser -l $SUDOUSER -c "ansible-playbook -e 'container_runtime_docker_storage_s
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
 echo $(date) " - Installing OpenShift Container Platform via Ansible Playbook"
 
-runuser -l $SUDOUSER -c "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml"
+runuser -l $SUDOUSER -c "ansible-playbook  /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
 
 echo $(date) " - Modifying sudoers"
 
