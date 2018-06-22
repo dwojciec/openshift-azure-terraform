@@ -16,18 +16,21 @@ resource "azurerm_availability_set" "master" {
   name                = "ocp-master-instances"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
+  managed             = true
 }
 
 resource "azurerm_availability_set" "infra" {
   name                = "ocp-infra-instances"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
+  managed             = true
 }
 
 resource "azurerm_availability_set" "node" {
   name                = "ocp-app-instances"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   location            = "${azurerm_resource_group.rg.location}"
+  managed             = true
 }
 
 resource "azurerm_availability_set" "cns" {
