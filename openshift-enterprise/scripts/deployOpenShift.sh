@@ -517,6 +517,7 @@ openshift_hosted_registry_replicas=1
 openshift_master_cluster_method=native
 openshift_node_local_quota_per_fsgroup=512Mi
 
+openshift_disable_check=docker_image_availability
 oreg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
 oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
 openshift_examples_modify_imagestreams=true
@@ -663,6 +664,8 @@ openshift_use_dnsmasq=true
 openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
+
+openshift_disable_check=docker_image_availability
 
 ansible_become=true
 openshift_cloudprovider_kind=azure
