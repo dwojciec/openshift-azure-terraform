@@ -567,7 +567,7 @@ openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/m
 openshift_logging_install_logging=false
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
+openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:443
 
 # Setup storage for etcd2, for the new Service Broker
 
@@ -725,7 +725,7 @@ openshift_master_metrics_public_url=https://hawkular-metrics.$ROUTING/hawkular/m
 openshift_logging_install_logging=false
 openshift_logging_kibana_hostname=kibana.$ROUTING
 openshift_master_logging_public_url=https://kibana.$ROUTING
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:8443
+openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME:443
 
 
 # Setup storage for etcd2, for the new Service Broker
