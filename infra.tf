@@ -72,7 +72,7 @@ resource "azurerm_virtual_machine" "infra" {
     name              = "${var.openshift_cluster_prefix}-ocp-infra-container-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
-    managed_disk_type = "Standard_LRS"
-    lun               = 0
+    managed_disk_type = "Premium_LRS"
+    lun               = 1
   }
 }

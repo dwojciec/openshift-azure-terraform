@@ -69,34 +69,34 @@ resource "azurerm_virtual_machine" "cns" {
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-cns-docker-pool${count.index}"
-    managed_disk_type = "Standard_LRS"
+    managed_disk_type = "Premium_LRS"
     disk_size_gb      = "${var.data_disk_size}"
     create_option     = "Empty"
-    lun               = 0
+    lun               = 1
   }
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-1-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
-    managed_disk_type = "Standard_LRS"
-    lun               = 1
+    managed_disk_type = "Premium_LRS"
+    lun               = 2
   }
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-2-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
-    managed_disk_type = "Standard_LRS"
-    lun               = 2
+    managed_disk_type = "Premium_LRS"
+    lun               = 3
   }
 
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-cns-container-3-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 64
-    managed_disk_type = "Standard_LRS"
-    lun               = 3
+    managed_disk_type = "Premium_LRS"
+    lun               = 4
   }
 
   storage_data_disk {
@@ -104,7 +104,7 @@ resource "azurerm_virtual_machine" "cns" {
     create_option     = "Empty"
     disk_size_gb      = 512
     managed_disk_type = "Premium_LRS"
-    lun               = 4
+    lun               = 5
   }
 
   storage_data_disk {
@@ -112,7 +112,7 @@ resource "azurerm_virtual_machine" "cns" {
     create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
-    lun               = 5
+    lun               = 6
   }
 
   storage_data_disk {
@@ -120,6 +120,6 @@ resource "azurerm_virtual_machine" "cns" {
     create_option     = "Empty"
     managed_disk_type = "Premium_LRS"
     disk_size_gb      = 512
-    lun               = 6
+    lun               = 7
   }
 }

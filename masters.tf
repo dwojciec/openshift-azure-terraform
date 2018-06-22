@@ -74,14 +74,14 @@ resource "azurerm_virtual_machine" "master" {
     name              = "${var.openshift_cluster_prefix}-ocp-master-container-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 0
+    managed_disk_type = "Premium_LRS"
+    lun               = 1
   }
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 1
+    managed_disk_type = "Premium_LRS"
+    lun               = 2
   }
 }

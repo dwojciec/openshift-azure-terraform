@@ -881,7 +881,7 @@ echo $(date) " - etcd Storage"
 runuser -l $SUDOUSER -c "ansible masters -b -m filesystem -a \"fstype=xfs dev=/dev/sde\""
 runuser -l $SUDOUSER -c "ansible masters -b -m file -a \"path=/var/lib/etcd state=directory mode=0755\""
 runuser -l $SUDOUSER -c "ansible masters -b -m mount -a \"path=/var/lib/etcd src=/dev/sde state=present  fstype=xfs\""
-runuser -l $SUDOUSER -c "ansible  masters -b -m shell -a \"restorecon -R  /var/lib/etcd\""
+runuser -l $SUDOUSER -c "ansible masters -b -m shell -a \"restorecon -R  /var/lib/etcd\""
 runuser -l $SUDOUSER -c "ansible masters -b -m mount -a \"path=/var/lib/etcd  src=/dev/sde state=mounted fstype=xfs\""
 
 # Container Storage
