@@ -60,7 +60,7 @@ provisioner "file" {
   }
 
   storage_os_disk {
-    name          = "${var.openshift_cluster_prefix}-app-osdisk"
+    name          = "${var.openshift_cluster_prefix}-app-osdisk${count.index}"
     managed_disk_type = "Standard_LRS"
     caching       = "ReadWrite"
     create_option = "FromImage"
