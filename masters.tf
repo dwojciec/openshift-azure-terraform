@@ -71,50 +71,17 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-container-1-${count.index}"
+    name              = "${var.openshift_cluster_prefix}-ocp-master-container-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 32
     managed_disk_type = "Standard_LRS"
     lun               = 0
   }
-
   storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-container-2-${count.index}"
+    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-${count.index}"
     create_option     = "Empty"
     disk_size_gb      = 32
     managed_disk_type = "Standard_LRS"
     lun               = 1
-  }
-
-  storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-container-3-${count.index}"
-    create_option     = "Empty"
-    disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 2
-  }
-
-  storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-1-${count.index}"
-    create_option     = "Empty"
-    disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 3
-  }
-
-  storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-2-${count.index}"
-    create_option     = "Empty"
-    disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 4
-  }
-
-  storage_data_disk {
-    name              = "${var.openshift_cluster_prefix}-ocp-master-etcd-3-${count.index}"
-    create_option     = "Empty"
-    disk_size_gb      = 32
-    managed_disk_type = "Standard_LRS"
-    lun               = 5
   }
 }
