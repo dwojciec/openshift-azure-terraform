@@ -539,7 +539,7 @@ openshift_override_hostname_check=true
 osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version,docker_image_availability
 # osm_controller_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
 # osm_api_server_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf']}
 # openshift_node_kubelet_args={'cloud-provider': ['azure'], 'cloud-config': ['/etc/azure/azure.conf'], 'enable-controller-attach-detach': ['true']}
@@ -678,7 +678,7 @@ openshift_clock_enabled=true
 
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 # disable checks
-openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version,docker_image_availability
 
 
 # apply updated node defaults
