@@ -61,11 +61,19 @@ resource "azurerm_virtual_machine" "infra" {
   }
 
   storage_os_disk {
-    name              = "${var.openshift_cluster_prefix}-infra-osdisk${count.index}"
+    name              = "${var.openshift_cluster_prefix}-ocp-infra-osdisk${count.index}"
     managed_disk_type = "Standard_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     disk_size_gb      = 32
+  }
+
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-infra-datadisk-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Premium_LRS"
+    lun               = 0
   }
 
   storage_data_disk {

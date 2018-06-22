@@ -63,13 +63,19 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_os_disk {
-    name              = "${var.openshift_cluster_prefix}-master-osdisk${count.index}"
+    name              = "${var.openshift_cluster_prefix}-ocp-master-osdisk${count.index}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
     disk_size_gb      = 32
   }
-
+  storage_data_disk {
+    name              = "${var.openshift_cluster_prefix}-ocp-master-datadisk-${count.index}"
+    create_option     = "Empty"
+    disk_size_gb      = 64
+    managed_disk_type = "Premium_LRS"
+    lun               = 0
+  }
   storage_data_disk {
     name              = "${var.openshift_cluster_prefix}-ocp-master-container-${count.index}"
     create_option     = "Empty"
