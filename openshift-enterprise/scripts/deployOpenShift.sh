@@ -665,7 +665,7 @@ openshift_master_default_subdomain=$ROUTING
 openshift_override_hostname_check=true
 osm_use_cockpit=true
 
-openshift_disable_check=docker_image_availability
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,package_version
 
 ansible_become=true
 openshift_cloudprovider_kind=azure
